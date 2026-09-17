@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <title>🇩🇪 Deutsch Spiele</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+        body {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            min-height: 100vh;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            padding: 20px;
+            -webkit-text-size-adjust: 100%;
+        }
+
+        .container { max-width: 800px; margin: 0 auto; }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-top: 15px;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            color: white;
+            text-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            margin-bottom: 8px;
+            letter-spacing: 1px;
+        }
+
+        .subtitle {
+            color: rgba(255,255,255,0.85);
+            font-size: 1.05rem;
+            font-weight: 400;
+        }
+
+        .flag-row {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+
+        .games-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .game-card {
+            background: rgba(255,255,255,0.97);
+            border-radius: 30px;
+            padding: 35px 25px;
+            text-align: center;
+            text-decoration: none;
+            color: inherit;
+            box-shadow: 0 15px 35px -10px rgba(0,0,0,0.4);
+            transition: transform 0.25s, box-shadow 0.25s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .game-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 6px;
+            background: var(--accent);
+        }
+
+        .game-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 25px 45px -10px rgba(0,0,0,0.5);
+        }
+
+        .game-card:active {
+            transform: scale(0.98);
+        }
+
+        .game-card.game-1 { --accent: linear-gradient(90deg, #667eea, #764ba2); }
+        .game-card.game-2 { --accent: linear-gradient(90deg, #059669, #065f46); }
+        .game-card.game-3 { --accent: linear-gradient(90deg, #f59e0b, #d97706); }
+
+        .game-icon {
+            font-size: 3.5rem;
+            line-height: 1;
+            margin-bottom: 5px;
+        }
+
+        /* 🇩🇪 Título en alemán: GRANDE y destacado */
+        .game-title-de {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #333;
+            line-height: 1.2;
+        }
+
+        /* 🇪🇸 Título en español: pequeño, debajo, en cursiva suave */
+        .game-title {
+            font-size: 0.85rem;
+            color: #888;
+            font-weight: 500;
+            font-style: italic;
+            margin-top: -2px;
+        }
+
+        .game-desc {
+            color: #666;
+            font-size: 0.9rem;
+            line-height: 1.4;
+            margin-top: 5px;
+        }
+
+        .game-tag {
+            display: inline-block;
+            padding: 5px 14px;
+            border-radius: 15px;
+            background: #f3f4f6;
+            font-size: 0.72rem;
+            font-weight: bold;
+            color: #555;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 8px;
+        }
+
+        footer {
+            text-align: center;
+            color: rgba(255,255,255,0.7);
+            font-size: 0.85rem;
+            padding: 20px 0;
+        }
+
+        .footer-hint {
+            background: rgba(255,255,255,0.1);
+            display: inline-block;
+            padding: 8px 18px;
+            border-radius: 20px;
+            margin-top: 10px;
+            backdrop-filter: blur(10px);
+        }
+
+        @media (max-width: 500px) {
+            h1 { font-size: 1.9rem; }
+            .subtitle { font-size: 0.95rem; }
+            .game-card { padding: 28px 20px; }
+            .game-icon { font-size: 3rem; }
+            .game-title-de { font-size: 1.3rem; }
+            .game-title { font-size: 0.8rem; }
+        }
+
+        @supports (padding: max(0px)) {
+            body {
+                padding-left: max(20px, env(safe-area-inset-left));
+                padding-right: max(20px, env(safe-area-inset-right));
+                padding-bottom: max(20px, env(safe-area-inset-bottom));
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="flag-row">🇩🇪 🎓</div>
+            <h1>Deutsch Spiele</h1>
+            <div class="subtitle">Wähle ein Spiel zum Üben</div>
+        </header>
+
+        <div class="games-grid">
+
+            <a href="wort-erraten/" class="game-card game-1">
+                <div class="game-icon">🔍</div>
+                <div class="game-title-de">Wort erraten</div>
+                <div class="game-title">Adivina la palabra</div>
+                <div class="game-desc">Descubre las letras ocultas y escribe la palabra completa</div>
+                <span class="game-tag">Wortschatz</span>
+            </a>
+
+            <a href="hoer-zu-und-finde/" class="game-card game-2">
+                <div class="game-icon">🎧</div>
+                <div class="game-title-de">Hör zu und finde</div>
+                <div class="game-title">Escucha y encuentra</div>
+                <div class="game-desc">Escucha la palabra en alemán y toca la traducción correcta</div>
+                <span class="game-tag">Hörverstehen</span>
+            </a>
+
+            <a href="woerter-zuordnen/" class="game-card game-3">
+                <div class="game-icon">🎯</div>
+                <div class="game-title-de">Wörter zuordnen</div>
+                <div class="game-title">Match de palabras</div>
+                <div class="game-desc">Relaciona cada palabra en alemán con su significado en español</div>
+                <span class="game-tag">Zuordnen</span>
+            </a>
+
+        </div>
+
+        <footer>
+            <div>Viel Erfolg beim Lernen! 🚀</div>
+            <div class="footer-hint">📱 Añade esta página a tu pantalla de inicio</div>
+        </footer>
+    </div>
+</body>
+</html>
