@@ -1,0 +1,1147 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <title>🎧 Escucha y Toca - Alemán</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+        body {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            min-height: 100vh;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            padding: 15px;
+            -webkit-text-size-adjust: 100%;
+            transition: background 0.4s;
+        }
+
+        body.streak-mode {
+            background: linear-gradient(135deg, #b91c1c 0%, #7c2d12 100%);
+        }
+
+        body.victory-mode {
+            background: linear-gradient(135deg, #059669 0%, #065f46 100%);
+        }
+
+        .container { max-width: 700px; margin: 0 auto; }
+
+        .card {
+            background: rgba(255,255,255,0.97);
+            border-radius: 30px;
+            padding: 22px;
+            box-shadow: 0 20px 40px -12px rgba(0,0,0,0.5);
+            margin-bottom: 15px;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 1.6rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-bottom: 4px;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            font-size: 0.85rem;
+            margin-bottom: 15px;
+        }
+
+        /* Carga */
+        .load-area {
+            background: #f3f4f6;
+            padding: 15px;
+            border-radius: 20px;
+            margin-bottom: 15px;
+        }
+
+        .load-area textarea {
+            width: 100%;
+            padding: 10px;
+            border-radius: 15px;
+            border: 1px solid #ccc;
+            font-family: monospace;
+            font-size: 13px;
+            resize: vertical;
+            min-height: 70px;
+            margin-bottom: 10px;
+            -webkit-appearance: none;
+        }
+
+        .load-buttons { display: flex; gap: 8px; flex-wrap: wrap; }
+
+        button {
+            padding: 12px 18px;
+            font-size: 0.9rem;
+            font-weight: bold;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: transform 0.15s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            font-family: inherit;
+            -webkit-appearance: none;
+            min-height: 44px;
+        }
+
+        button:active { transform: scale(0.96); }
+
+        .btn-primary { background: #667eea; color: white; flex: 1; }
+        .btn-file { background: #3b82f6; color: white; flex: 1; text-align: center; cursor: pointer; }
+        .btn-start { background: #10b981; color: white; }
+        .btn-reset { background: #f59e0b; color: white; }
+        .btn-stop { background: #dc2626; color: white; }
+        .btn-close { background: #6b7280; color: white; }
+        .btn-secondary { background: #e5e7eb; color: #374151; }
+
+        /* Panel de configuración */
+        .config-panel {
+            background: #f3f4f6;
+            padding: 12px;
+            border-radius: 15px;
+            margin-bottom: 15px;
+        }
+
+        .config-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+        }
+
+        .config-row:last-child { margin-bottom: 0; }
+
+        .config-label {
+            font-size: 0.85rem;
+            font-weight: bold;
+            color: #555;
+            flex-shrink: 0;
+        }
+
+        .timer-buttons { display: flex; gap: 6px; flex-wrap: wrap; }
+
+        .timer-btn {
+            padding: 8px 14px;
+            font-size: 0.85rem;
+            background: #e5e7eb;
+            color: #374151;
+            border-radius: 20px;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+            min-height: 36px;
+        }
+
+        .timer-btn.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        /* Header de juego */
+        .game-header {
+            display: flex;
+            justify-content: space-between;
+            gap: 8px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+
+        .header-badge {
+            flex: 1;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 10px;
+            border-radius: 15px;
+            text-align: center;
+            min-width: 70px;
+        }
+
+        .header-badge .label { font-size: 0.65rem; opacity: 0.9; text-transform: uppercase; letter-spacing: 1px; }
+        .header-badge .value { font-size: 1.3rem; font-weight: bold; }
+
+        .header-badge.streak { background: linear-gradient(135deg, #ef4444 0%, #b91c1c 100%); }
+        .header-badge.points { background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); }
+
+        /* Timer */
+        .timer-bar {
+            height: 14px;
+            background: #e5e7eb;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 15px;
+            position: relative;
+        }
+
+        .timer-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #10b981 0%, #059669 100%);
+            transition: width 0.1s linear;
+            border-radius: 10px;
+        }
+
+        .timer-fill.warning { background: linear-gradient(90deg, #f59e0b 0%, #d97706 100%); }
+        .timer-fill.danger { background: linear-gradient(90deg, #ef4444 0%, #b91c1c 100%); }
+
+        .timer-text {
+            text-align: center;
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 12px;
+        }
+
+        /* Botón de escuchar grande */
+        .listen-area { text-align: center; margin-bottom: 20px; }
+
+        .btn-listen {
+            background: linear-gradient(135deg, #059669 0%, #065f46 100%);
+            color: white;
+            font-size: 1.3rem;
+            padding: 22px 40px;
+            border-radius: 60px;
+            box-shadow: 0 10px 25px -5px rgba(5,150,105,0.5);
+            animation: pulse-listen 2s infinite;
+        }
+
+        @keyframes pulse-listen {
+            0%, 100% { transform: scale(1); box-shadow: 0 10px 25px -5px rgba(5,150,105,0.5); }
+            50% { transform: scale(1.05); box-shadow: 0 15px 30px -5px rgba(5,150,105,0.7); }
+        }
+
+        .btn-listen:active { animation: none; }
+
+        /* Opciones */
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+
+        .option-btn {
+            background: white;
+            color: #333;
+            border: 3px solid #667eea;
+            border-radius: 20px;
+            padding: 22px 12px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+            min-height: 80px;
+            word-break: break-word;
+            -webkit-appearance: none;
+            font-family: inherit;
+        }
+
+        .option-btn:hover:not(:disabled) {
+            background: #f0f4ff;
+            transform: translateY(-2px);
+        }
+
+        .option-btn:active:not(:disabled) {
+            transform: scale(0.97);
+        }
+
+        .option-btn.correct {
+            background: #10b981;
+            color: white;
+            border-color: #059669;
+            animation: correct-bounce 0.5s;
+        }
+
+        @keyframes correct-bounce {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        .option-btn.incorrect {
+            background: #ef4444;
+            color: white;
+            border-color: #b91c1c;
+            animation: shake 0.4s;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-8px); }
+            75% { transform: translateX(8px); }
+        }
+
+        .option-btn:disabled { cursor: not-allowed; }
+
+        /* Feedback flotante */
+        .feedback-float {
+            position: fixed;
+            top: 30%;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 4rem;
+            font-weight: bold;
+            pointer-events: none;
+            z-index: 1000;
+            opacity: 0;
+        }
+
+        .feedback-float.show {
+            animation: float-up 1s ease-out;
+        }
+
+        @keyframes float-up {
+            0% { opacity: 0; transform: translateX(-50%) translateY(0) scale(0.5); }
+            30% { opacity: 1; transform: translateX(-50%) translateY(-30px) scale(1.3); }
+            100% { opacity: 0; transform: translateX(-50%) translateY(-100px) scale(1); }
+        }
+
+        .feedback-float.correct { color: #10b981; }
+        .feedback-float.incorrect { color: #ef4444; }
+
+        /* Estado */
+        .status {
+            background: #f3f4f6;
+            padding: 12px;
+            border-radius: 15px;
+            text-align: center;
+            font-size: 0.9rem;
+            color: #555;
+            margin-bottom: 15px;
+        }
+
+        .status.playing { background: #dbeafe; color: #1e40af; font-weight: bold; }
+        .status.finished {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            font-weight: bold;
+        }
+        .status.error { background: #fee2e2; color: #991b1b; font-weight: bold; }
+
+        /* Pantalla de victoria */
+        .victory-screen {
+            display: none;
+            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+            color: #78350f;
+            border-radius: 25px;
+            padding: 25px;
+            text-align: center;
+            margin-bottom: 15px;
+            box-shadow: 0 15px 30px -8px rgba(245,158,11,0.5);
+        }
+
+        .victory-screen.show { display: block; animation: victory-in 0.6s; }
+
+        @keyframes victory-in {
+            0% { transform: scale(0.5); opacity: 0; }
+            70% { transform: scale(1.05); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .victory-screen h2 { font-size: 2rem; margin-bottom: 8px; }
+        .victory-screen .stats-row {
+            display: flex;
+            justify-content: space-around;
+            gap: 10px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+        .victory-screen .stat-item {
+            background: rgba(255,255,255,0.5);
+            padding: 10px 15px;
+            border-radius: 15px;
+            min-width: 90px;
+        }
+        .victory-screen .stat-item .lbl { font-size: 0.7rem; font-weight: bold; text-transform: uppercase; }
+        .victory-screen .stat-item .val { font-size: 1.5rem; font-weight: bold; }
+
+        /* Medallas */
+        .medals-row {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-top: 12px;
+        }
+
+        .medal {
+            font-size: 1.6rem;
+            filter: grayscale(100%);
+            opacity: 0.35;
+            transition: all 0.3s;
+        }
+
+        .medal.unlocked {
+            filter: grayscale(0%);
+            opacity: 1;
+            animation: medal-pop 0.5s;
+        }
+
+        @keyframes medal-pop {
+            0% { transform: scale(0.5) rotate(-20deg); }
+            60% { transform: scale(1.3) rotate(10deg); }
+            100% { transform: scale(1) rotate(0deg); }
+        }
+
+        /* Toast de logro */
+        .achievement-toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+            color: #78350f;
+            padding: 15px 22px;
+            border-radius: 20px;
+            font-weight: bold;
+            box-shadow: 0 10px 30px -5px rgba(0,0,0,0.4);
+            z-index: 2000;
+            transform: translateX(500px);
+            transition: transform 0.5s ease-out;
+            max-width: 280px;
+        }
+
+        .achievement-toast.show { transform: translateX(0); }
+        .achievement-toast .title { font-size: 0.75rem; text-transform: uppercase; opacity: 0.8; }
+        .achievement-toast .name { font-size: 1.1rem; margin-top: 3px; }
+        .achievement-toast .icon { font-size: 1.8rem; margin-right: 10px; }
+
+        /* Info extra */
+        .info-strip {
+            background: #e5e7eb;
+            padding: 10px 15px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            color: #555;
+            text-align: center;
+            margin-bottom: 12px;
+            font-weight: bold;
+        }
+
+        @media (max-width: 400px) {
+            .option-btn { font-size: 0.95rem; padding: 18px 8px; min-height: 70px; }
+            .btn-listen { font-size: 1.1rem; padding: 18px 30px; }
+            h1 { font-size: 1.4rem; }
+            .header-badge .value { font-size: 1.1rem; }
+        }
+
+        @supports (padding: max(0px)) {
+            body {
+                padding-left: max(15px, env(safe-area-inset-left));
+                padding-right: max(15px, env(safe-area-inset-right));
+                padding-bottom: max(15px, env(safe-area-inset-bottom));
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+
+    <div class="card">
+        <h1>🎧 Escucha y Toca</h1>
+        <div class="subtitle">🇩🇪 Listening + Vocabulario</div>
+
+        <!-- Info general -->
+        <div class="info-strip" id="profileStrip">
+            🏅 Nivel 1 · ⭐ 0 pts · 🔥 Racha máx: 0
+        </div>
+
+        <!-- Carga de lista -->
+        <div class="load-area">
+            <textarea id="wordPasteArea" placeholder="Pega tu lista, una por línea:&#10;Haus|casa&#10;Baum|árbol&#10;Wasser|agua&#10;Buch|libro"></textarea>
+            <div class="load-buttons">
+                <button class="btn-primary" id="pasteBtn">📋 Cargar</button>
+                <label class="btn-file" for="fileInput">📁 Archivo</label>
+                <input type="file" id="fileInput" accept=".txt" style="display:none;">
+            </div>
+        </div>
+
+        <!-- Configuración de tiempo -->
+        <div class="config-panel">
+            <div class="config-row">
+                <span class="config-label">⏱️ Tiempo por pregunta:</span>
+                <div class="timer-buttons">
+                    <button class="timer-btn" data-time="5">5s</button>
+                    <button class="timer-btn active" data-time="10">10s</button>
+                    <button class="timer-btn" data-time="20">20s</button>
+                    <button class="timer-btn" data-time="0">Sin límite</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="status" id="statusMsg">💡 Carga tu lista para comenzar</div>
+
+        <!-- Botón de inicio -->
+        <div style="text-align:center; margin-bottom:15px;">
+            <button class="btn-start" id="startBtn" disabled>▶️ Comenzar juego</button>
+            <button class="btn-reset" id="resetBtn" style="margin-left:8px;">🔄 Reiniciar puntos</button>
+        </div>
+
+        <!-- Zona de juego -->
+        <div id="gameZone" style="display:none;">
+            <div class="game-header">
+                <div class="header-badge">
+                    <div class="label">Pregunta</div>
+                    <div class="value" id="questionCounter">1/10</div>
+                </div>
+                <div class="header-badge streak">
+                    <div class="label">🔥 Racha</div>
+                    <div class="value" id="streakCounter">0</div>
+                </div>
+                <div class="header-badge points">
+                    <div class="label">⭐ Puntos</div>
+                    <div class="value" id="pointsCounter">0</div>
+                </div>
+            </div>
+
+            <div class="timer-bar">
+                <div class="timer-fill" id="timerFill" style="width: 100%"></div>
+            </div>
+            <div class="timer-text" id="timerText">10s</div>
+
+            <div class="listen-area">
+                <button class="btn-listen" id="listenBtn">🔊 Escuchar palabra</button>
+            </div>
+
+            <div class="options-grid" id="optionsGrid">
+                <!-- Opciones dinámicas -->
+            </div>
+        </div>
+
+        <!-- Pantalla de victoria -->
+        <div class="victory-screen" id="victoryScreen">
+            <h2>🎉 ¡Ronda completada!</h2>
+            <div id="victorySubtitle" style="font-size:0.95rem; margin-bottom:10px;"></div>
+            <div class="stats-row">
+                <div class="stat-item">
+                    <div class="lbl">Aciertos</div>
+                    <div class="val" id="victoryCorrect">0</div>
+                </div>
+                <div class="stat-item">
+                    <div class="lbl">Errores</div>
+                    <div class="val" id="victoryIncorrect">0</div>
+                </div>
+                <div class="stat-item">
+                    <div class="lbl">Puntos</div>
+                    <div class="val" id="victoryPoints">0</div>
+                </div>
+                <div class="stat-item">
+                    <div class="lbl">Racha</div>
+                    <div class="val" id="victoryStreak">0</div>
+                </div>
+            </div>
+            <div class="medals-row" id="victoryMedals"></div>
+            <div style="margin-top:18px; font-size:0.8rem; opacity:0.8;">
+                📸 Haz captura de esta pantalla
+            </div>
+            <div style="margin-top:12px;">
+                <button class="btn-start" id="playAgainBtn">🔁 Jugar otra vez</button>
+            </div>
+        </div>
+
+        <!-- Medallas -->
+        <div class="card" style="margin-top:10px;">
+            <div style="font-weight:bold; text-align:center; margin-bottom:8px; color:#555;">
+                🏆 Logros desbloqueados
+            </div>
+            <div class="medals-row" id="globalMedals"></div>
+        </div>
+
+    </div>
+</div>
+
+<!-- Feedback flotante -->
+<div class="feedback-float" id="feedbackFloat"></div>
+
+<!-- Toast de logro -->
+<div class="achievement-toast" id="achievementToast">
+    <div style="display:flex; align-items:center;">
+        <div class="icon" id="toastIcon">🏆</div>
+        <div>
+            <div class="title">¡Logro desbloqueado!</div>
+            <div class="name" id="toastName"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // ============================================
+    // LOGROS (medallas)
+    // ============================================
+    const ACHIEVEMENTS = [
+        { id: 'first_game', icon: '🎯', name: 'Primer juego', desc: 'Completa tu primera ronda', check: (s) => s.gamesPlayed >= 1 },
+        { id: 'streak_3', icon: '🔥', name: 'En racha', desc: '3 aciertos seguidos', check: (s) => s.maxStreak >= 3 },
+        { id: 'streak_5', icon: '⚡', name: 'Imparable', desc: '5 aciertos seguidos', check: (s) => s.maxStreak >= 5 },
+        { id: 'streak_10', icon: '💥', name: 'Demoledor', desc: '10 aciertos seguidos', check: (s) => s.maxStreak >= 10 },
+        { id: 'perfect_round', icon: '💯', name: 'Ronda perfecta', desc: 'Sin errores en una ronda', check: (s) => s.perfectRounds >= 1 },
+        { id: 'perfect_3', icon: '👑', name: 'Rey del listening', desc: '3 rondas perfectas', check: (s) => s.perfectRounds >= 3 },
+        { id: 'points_100', icon: '⭐', name: '100 puntos', desc: 'Acumula 100 puntos', check: (s) => s.totalPoints >= 100 },
+        { id: 'points_500', icon: '🌟', name: '500 puntos', desc: 'Acumula 500 puntos', check: (s) => s.totalPoints >= 500 },
+        { id: 'points_1000', icon: '💎', name: '1000 puntos', desc: 'Acumula 1000 puntos', check: (s) => s.totalPoints >= 1000 },
+        { id: 'speed_demon', icon: '🚀', name: 'Velocista', desc: '10 respuestas en < 2s', check: (s) => s.fastAnswers >= 10 },
+        { id: 'listener', icon: '🎧', name: 'Buen oído', desc: '50 palabras escuchadas', check: (s) => s.totalListens >= 50 },
+        { id: 'veteran', icon: '🎖️', name: 'Veterano', desc: '10 rondas jugadas', check: (s) => s.gamesPlayed >= 10 }
+    ];
+
+    // ============================================
+    // ESTADO PERSISTENTE (localStorage)
+    // ============================================
+    const STORAGE_KEY = 'escuchaYTocaStats_v1';
+
+    function loadStats() {
+        try {
+            const raw = localStorage.getItem(STORAGE_KEY);
+            if (raw) return JSON.parse(raw);
+        } catch (e) {}
+        return {
+            totalPoints: 0,
+            gamesPlayed: 0,
+            perfectRounds: 0,
+            maxStreak: 0,
+            fastAnswers: 0,
+            totalListens: 0,
+            unlockedAchievements: []
+        };
+    }
+
+    function saveStats() {
+        try {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(userStats));
+        } catch (e) {}
+    }
+
+    let userStats = loadStats();
+
+    // ============================================
+    // ESTADO DE LA RONDA ACTUAL
+    // ============================================
+    let wordList = [];           // [{de, es}]
+    let roundQueue = [];         // palabras por preguntar
+    let currentQuestion = null;  // {de, es, options: [...]}
+    let currentStreak = 0;
+    let currentPoints = 0;
+    let currentCorrect = 0;
+    let currentIncorrect = 0;
+    let questionIndex = 0;
+    let totalQuestions = 0;
+    let timerInterval = null;
+    let timeRemaining = 0;
+    let timerSeconds = 10;       // configurable
+    let gameActive = false;
+    let questionAnswered = false;
+
+    // Elementos DOM
+    const wordPasteArea = document.getElementById('wordPasteArea');
+    const statusMsg = document.getElementById('statusMsg');
+    const startBtn = document.getElementById('startBtn');
+    const resetBtn = document.getElementById('resetBtn');
+    const gameZone = document.getElementById('gameZone');
+    const optionsGrid = document.getElementById('optionsGrid');
+    const listenBtn = document.getElementById('listenBtn');
+    const timerFill = document.getElementById('timerFill');
+    const timerText = document.getElementById('timerText');
+    const questionCounter = document.getElementById('questionCounter');
+    const streakCounter = document.getElementById('streakCounter');
+    const pointsCounter = document.getElementById('pointsCounter');
+    const feedbackFloat = document.getElementById('feedbackFloat');
+    const victoryScreen = document.getElementById('victoryScreen');
+    const profileStrip = document.getElementById('profileStrip');
+    const globalMedals = document.getElementById('globalMedals');
+    const achievementToast = document.getElementById('achievementToast');
+
+    // ============================================
+    // UTILIDADES
+    // ============================================
+    function shuffle(arr) {
+        const a = [...arr];
+        for (let i = a.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [a[i], a[j]] = [a[j], a[i]];
+        }
+        return a;
+    }
+
+    function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+
+    // ============================================
+    // CARGAR LISTA
+    // ============================================
+    function parseLine(line) {
+        const trimmed = line.trim();
+        if (!trimmed) return null;
+        let parts;
+        if (trimmed.includes('|')) parts = trimmed.split('|');
+        else if (trimmed.includes('\t')) parts = trimmed.split('\t');
+        else if (trimmed.includes(' - ')) parts = trimmed.split(' - ');
+        else return null;
+        const de = (parts[0] || '').trim();
+        const es = (parts[1] || '').trim();
+        if (!de || !es) return null;
+        return { de, es };
+    }
+
+    function loadWords(text) {
+        const lines = text.split(/\r?\n/);
+        const parsed = lines.map(parseLine).filter(w => w);
+        const seen = new Set();
+        const unique = [];
+        for (const w of parsed) {
+            const key = w.de.toLowerCase();
+            if (!seen.has(key)) {
+                seen.add(key);
+                unique.push(w);
+            }
+        }
+        if (unique.length < 4) {
+            alert('Necesitas al menos 4 pares (alemán|español) para generar opciones.');
+            return;
+        }
+        wordList = unique;
+        statusMsg.textContent = `✅ ${wordList.length} pares cargados. Presiona "Comenzar juego".`;
+        statusMsg.className = 'status';
+        startBtn.disabled = false;
+        gameZone.style.display = 'none';
+        victoryScreen.classList.remove('show');
+    }
+
+    // ============================================
+    // INICIAR JUEGO
+    // ============================================
+    function startGame() {
+        if (wordList.length < 4) {
+            alert('Necesitas al menos 4 palabras.');
+            return;
+        }
+        gameActive = true;
+        roundQueue = shuffle(wordList);
+        totalQuestions = roundQueue.length;
+        questionIndex = 0;
+        currentStreak = 0;
+        currentPoints = 0;
+        currentCorrect = 0;
+        currentIncorrect = 0;
+
+        gameZone.style.display = 'block';
+        victoryScreen.classList.remove('show');
+        document.body.classList.remove('victory-mode', 'streak-mode');
+        startBtn.disabled = true;
+
+        updateHeader();
+        nextQuestion();
+    }
+
+    function nextQuestion() {
+        if (roundQueue.length === 0) {
+            endRound();
+            return;
+        }
+
+        questionAnswered = false;
+        const correct = roundQueue.shift();
+        questionIndex++;
+
+        // Generar 3 distractores aleatorios (que no sean la correcta)
+        const others = wordList.filter(w => w.es !== correct.es);
+        const shuffledOthers = shuffle(others);
+        const distractors = shuffledOthers.slice(0, Math.min(3, shuffledOthers.length));
+
+        // Opciones: correcta + distractores
+        const options = shuffle([correct, ...distractors]);
+
+        currentQuestion = { correct, options };
+
+        // Renderizar
+        optionsGrid.innerHTML = options.map((opt, i) => `
+            <button class="option-btn" data-es="${escapeHtml(opt.es)}">
+                ${escapeHtml(opt.es)}
+            </button>
+        `).join('');
+
+        optionsGrid.querySelectorAll('.option-btn').forEach(btn => {
+            btn.addEventListener('click', () => handleAnswer(btn));
+        });
+
+        updateHeader();
+
+        // Auto pronunciar y arrancar timer
+        setTimeout(() => {
+            speakWord(correct.de);
+            startTimer();
+        }, 300);
+    }
+
+    function handleAnswer(btn) {
+        if (questionAnswered || !gameActive) return;
+        questionAnswered = true;
+        stopTimer();
+
+        const selected = btn.getAttribute('data-es');
+        const correctEs = currentQuestion.correct.es;
+        const isCorrect = selected === correctEs;
+
+        // Deshabilitar todas
+        optionsGrid.querySelectorAll('.option-btn').forEach(b => b.disabled = true);
+
+        if (isCorrect) {
+            btn.classList.add('correct');
+            currentStreak++;
+            currentCorrect++;
+
+            // Calcular puntos
+            const timeBonus = timeRemaining > 0 ? Math.floor(timeRemaining) : 0;
+            const basePoints = 10 + timeBonus;
+            const streakMultiplier = currentStreak >= 10 ? 3 : currentStreak >= 5 ? 2 : 1;
+            const earned = basePoints * streakMultiplier;
+            currentPoints += earned;
+
+            // Rastrear velocidad
+            if (timerSeconds > 0 && timerSeconds - timeRemaining <= 2) {
+                userStats.fastAnswers = (userStats.fastAnswers || 0) + 1;
+            }
+
+            showFeedbackFloat('✅ +' + earned, 'correct');
+            playSuccessSound();
+
+            // Modo racha visual
+            if (currentStreak >= 3) {
+                document.body.classList.add('streak-mode');
+                setTimeout(() => document.body.classList.remove('streak-mode'), 1200);
+            }
+        } else {
+            btn.classList.add('incorrect');
+            // Marcar la correcta en verde
+            optionsGrid.querySelectorAll('.option-btn').forEach(b => {
+                if (b.getAttribute('data-es') === correctEs) b.classList.add('correct');
+            });
+            currentStreak = 0;
+            currentIncorrect++;
+            showFeedbackFloat('❌', 'incorrect');
+            playErrorSound();
+        }
+
+        // Actualizar stats globales
+        userStats.totalPoints += isCorrect ? currentPoints - (currentPoints - earnedPoints(isCorrect, timeRemaining, currentStreak)) : 0;
+        // Simplificamos: sumar directamente lo ganado
+        if (isCorrect) {
+            userStats.totalPoints = (userStats.totalPoints || 0);
+        }
+        userStats.maxStreak = Math.max(userStats.maxStreak || 0, currentStreak);
+
+        saveStats();
+        checkAchievements();
+        updateProfileStrip();
+        updateHeader();
+
+        // Siguiente pregunta
+        setTimeout(() => {
+            if (gameActive) nextQuestion();
+        }, 1500);
+    }
+
+    function earnedPoints(isCorrect, timeRemaining, streak) {
+        if (!isCorrect) return 0;
+        const timeBonus = timeRemaining > 0 ? Math.floor(timeRemaining) : 0;
+        const base = 10 + timeBonus;
+        const mult = streak >= 10 ? 3 : streak >= 5 ? 2 : 1;
+        return base * mult;
+    }
+
+    function showFeedbackFloat(text, type) {
+        feedbackFloat.textContent = text;
+        feedbackFloat.className = 'feedback-float ' + type;
+        void feedbackFloat.offsetWidth;
+        feedbackFloat.classList.add('show');
+        setTimeout(() => feedbackFloat.classList.remove('show'), 1000);
+    }
+
+    function updateHeader() {
+        questionCounter.textContent = `${questionIndex}/${totalQuestions}`;
+        streakCounter.textContent = currentStreak;
+        pointsCounter.textContent = currentPoints;
+    }
+
+    function updateProfileStrip() {
+        const level = Math.floor((userStats.totalPoints || 0) / 100) + 1;
+        profileStrip.textContent = `🏅 Nivel ${level} · ⭐ ${userStats.totalPoints || 0} pts · 🔥 Racha máx: ${userStats.maxStreak || 0}`;
+    }
+
+    // ============================================
+    // TIMER
+    // ============================================
+    function startTimer() {
+        stopTimer();
+        if (timerSeconds === 0) {
+            timerFill.style.width = '100%';
+            timerFill.className = 'timer-fill';
+            timerText.textContent = '∞ Sin límite';
+            return;
+        }
+        timeRemaining = timerSeconds;
+        updateTimerDisplay();
+
+        timerInterval = setInterval(() => {
+            timeRemaining -= 0.1;
+            if (timeRemaining <= 0) {
+                timeRemaining = 0;
+                updateTimerDisplay();
+                stopTimer();
+                // Tiempo agotado: marcar como incorrecto
+                if (!questionAnswered) {
+                    questionAnswered = true;
+                    currentStreak = 0;
+                    currentIncorrect++;
+                    optionsGrid.querySelectorAll('.option-btn').forEach(b => {
+                        b.disabled = true;
+                        if (b.getAttribute('data-es') === currentQuestion.correct.es) {
+                            b.classList.add('correct');
+                        }
+                    });
+                    showFeedbackFloat('⏰', 'incorrect');
+                    playErrorSound();
+                    userStats.maxStreak = Math.max(userStats.maxStreak || 0, currentStreak);
+                    saveStats();
+                    updateHeader();
+                    setTimeout(() => { if (gameActive) nextQuestion(); }, 1500);
+                }
+            } else {
+                updateTimerDisplay();
+            }
+        }, 100);
+    }
+
+    function stopTimer() {
+        if (timerInterval) {
+            clearInterval(timerInterval);
+            timerInterval = null;
+        }
+    }
+
+    function updateTimerDisplay() {
+        const pct = (timeRemaining / timerSeconds) * 100;
+        timerFill.style.width = pct + '%';
+        timerFill.className = 'timer-fill';
+        if (pct < 25) timerFill.classList.add('danger');
+        else if (pct < 50) timerFill.classList.add('warning');
+
+        timerText.textContent = Math.ceil(timeRemaining) + 's';
+    }
+
+    // ============================================
+    // PRONUNCIACIÓN
+    // ============================================
+    function speakWord(text) {
+        if (!('speechSynthesis' in window)) return;
+        window.speechSynthesis.cancel();
+        const utt = new SpeechSynthesisUtterance(text);
+        utt.lang = 'de-DE';
+        utt.rate = 0.85;
+        const voices = window.speechSynthesis.getVoices();
+        const german = voices.find(v => v.lang === 'de-DE' || v.lang.startsWith('de'));
+        if (german) utt.voice = german;
+        window.speechSynthesis.speak(utt);
+
+        userStats.totalListens = (userStats.totalListens || 0) + 1;
+        saveStats();
+        checkAchievements();
+    }
+
+    listenBtn.addEventListener('click', () => {
+        if (currentQuestion) speakWord(currentQuestion.correct.de);
+    });
+
+    if ('speechSynthesis' in window) {
+        window.speechSynthesis.onvoiceschanged = () => window.speechSynthesis.getVoices();
+        window.speechSynthesis.getVoices();
+    }
+
+    // ============================================
+    // SONIDOS
+    // ============================================
+    let audioCtx = null;
+    function getAudioCtx() {
+        if (!audioCtx) {
+            try { audioCtx = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) {}
+        }
+        return audioCtx;
+    }
+
+    function playSuccessSound() {
+        const ctx = getAudioCtx();
+        if (!ctx) return;
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.connect(gain); gain.connect(ctx.destination);
+        osc.frequency.value = 880;
+        osc.type = 'sine';
+        gain.gain.setValueAtTime(0.15, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.2);
+        osc.start(); osc.stop(ctx.currentTime + 0.2);
+    }
+
+    function playErrorSound() {
+        const ctx = getAudioCtx();
+        if (!ctx) return;
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.connect(gain); gain.connect(ctx.destination);
+        osc.frequency.value = 220;
+        osc.type = 'sawtooth';
+        gain.gain.setValueAtTime(0.1, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.25);
+        osc.start(); osc.stop(ctx.currentTime + 0.25);
+    }
+
+    // ============================================
+    // LOGROS
+    // ============================================
+    function checkAchievements() {
+        ACHIEVEMENTS.forEach(a => {
+            if (!userStats.unlockedAchievements.includes(a.id)) {
+                if (a.check(userStats)) {
+                    userStats.unlockedAchievements.push(a.id);
+                    saveStats();
+                    showAchievementToast(a);
+                }
+            }
+        });
+        renderMedals();
+    }
+
+    function showAchievementToast(ach) {
+        document.getElementById('toastIcon').textContent = ach.icon;
+        document.getElementById('toastName').textContent = ach.name;
+        achievementToast.classList.add('show');
+        setTimeout(() => achievementToast.classList.remove('show'), 3500);
+    }
+
+    function renderMedals() {
+        const html = ACHIEVEMENTS.map(a => {
+            const unlocked = userStats.unlockedAchievements.includes(a.id);
+            return `<span class="medal ${unlocked ? 'unlocked' : ''}" title="${a.name}: ${a.desc}">${a.icon}</span>`;
+        }).join('');
+        globalMedals.innerHTML = html;
+    }
+
+    // ============================================
+    // FIN DE RONDA
+    // ============================================
+    function endRound() {
+        gameActive = false;
+        stopTimer();
+        gameZone.style.display = 'none';
+
+        const isPerfect = currentIncorrect === 0;
+        if (isPerfect) {
+            userStats.perfectRounds = (userStats.perfectRounds || 0) + 1;
+        }
+        userStats.gamesPlayed = (userStats.gamesPlayed || 0) + 1;
+        userStats.totalPoints = (userStats.totalPoints || 0) + currentPoints;
+        userStats.maxStreak = Math.max(userStats.maxStreak || 0, currentStreak);
+
+        saveStats();
+        checkAchievements();
+        updateProfileStrip();
+
+        // Pantalla de victoria
+        document.getElementById('victoryCorrect').textContent = currentCorrect;
+        document.getElementById('victoryIncorrect').textContent = currentIncorrect;
+        document.getElementById('victoryPoints').textContent = currentPoints;
+        document.getElementById('victoryStreak').textContent = currentStreak;
+
+        const subtitle = isPerfect
+            ? '💯 ¡Ronda perfecta! Sin errores.'
+            : `🎯 Acertaste ${currentCorrect} de ${totalQuestions}`;
+        document.getElementById('victorySubtitle').textContent = subtitle;
+
+        // Medallas de esta ronda
+        const medalsHtml = ACHIEVEMENTS.map(a => {
+            const unlocked = userStats.unlockedAchievements.includes(a.id);
+            return `<span class="medal ${unlocked ? 'unlocked' : ''}">${a.icon}</span>`;
+        }).join('');
+        document.getElementById('victoryMedals').innerHTML = medalsHtml;
+
+        victoryScreen.classList.add('show');
+        document.body.classList.add('victory-mode');
+        document.body.classList.remove('streak-mode');
+
+        // Sonido de victoria
+        if (isPerfect) {
+            setTimeout(() => playSuccessSound(), 100);
+            setTimeout(() => playSuccessSound(), 300);
+            setTimeout(() => playSuccessSound(), 500);
+        }
+
+        startBtn.disabled = false;
+    }
+
+    // ============================================
+    // EVENTOS
+    // ============================================
+    document.getElementById('pasteBtn').addEventListener('click', () => {
+        const text = wordPasteArea.value;
+        if (!text.trim()) {
+            alert('Pega primero la lista de palabras.');
+            return;
+        }
+        loadWords(text);
+    });
+
+    document.getElementById('fileInput').addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+            wordPasteArea.value = ev.target.result;
+            loadWords(ev.target.result);
+        };
+        reader.readAsText(file, 'UTF-8');
+    });
+
+    document.querySelectorAll('.timer-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('.timer-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            timerSeconds = parseInt(btn.getAttribute('data-time'), 10);
+            statusMsg.textContent = `⏱️ Tiempo configurado: ${timerSeconds === 0 ? 'Sin límite' : timerSeconds + 's'}`;
+            statusMsg.className = 'status';
+        });
+    });
+
+    startBtn.addEventListener('click', startGame);
+    document.getElementById('playAgainBtn').addEventListener('click', startGame);
+
+    resetBtn.addEventListener('click', () => {
+        if (!confirm('¿Borrar todas las estadísticas y logros?')) return;
+        userStats = {
+            totalPoints: 0,
+            gamesPlayed: 0,
+            perfectRounds: 0,
+            maxStreak: 0,
+            fastAnswers: 0,
+            totalListens: 0,
+            unlockedAchievements: []
+        };
+        saveStats();
+        renderMedals();
+        updateProfileStrip();
+        statusMsg.textContent = '🔄 Estadísticas reiniciadas';
+        statusMsg.className = 'status';
+    });
+
+    // Inicializar
+    renderMedals();
+    updateProfileStrip();
+</script>
+</body>
+</html>
