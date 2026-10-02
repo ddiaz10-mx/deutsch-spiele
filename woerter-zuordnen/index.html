@@ -1,17 +1,12 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="de">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <title>Emparejar Vocabulario - Deutsch/Spanisch</title>
+    <title>🎯 Wörter zuordnen</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
         body {
             background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
@@ -21,10 +16,7 @@
             -webkit-text-size-adjust: 100%;
         }
 
-        .container {
-            max-width: 1000px;
-            margin: 0 auto;
-        }
+        .container { max-width: 900px; margin: 0 auto; }
 
         .card {
             background: rgba(255,255,255,0.97);
@@ -36,7 +28,7 @@
 
         h1 {
             text-align: center;
-            font-size: 1.7rem;
+            font-size: 1.8rem;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             -webkit-background-clip: text;
             background-clip: text;
@@ -51,36 +43,9 @@
             margin-bottom: 20px;
         }
 
-        /* Carga de lista */
-        .load-area {
-            background: #f3f4f6;
-            padding: 15px;
-            border-radius: 20px;
-            margin-bottom: 20px;
-        }
-
-        .load-area textarea {
-            width: 100%;
-            padding: 12px;
-            border-radius: 15px;
-            border: 1px solid #ccc;
-            font-family: monospace;
-            font-size: 14px;
-            resize: vertical;
-            min-height: 90px;
-            margin-bottom: 10px;
-            -webkit-appearance: none;
-        }
-
-        .load-buttons {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-
         button {
-            padding: 12px 20px;
-            font-size: 0.95rem;
+            padding: 14px 20px;
+            font-size: 1rem;
             font-weight: bold;
             border: none;
             border-radius: 50px;
@@ -92,57 +57,186 @@
             gap: 6px;
             font-family: inherit;
             -webkit-appearance: none;
-            min-height: 46px;
+            min-height: 48px;
         }
 
         button:active { transform: scale(0.96); }
+        button:disabled { opacity: 0.5; cursor: not-allowed; }
 
         .btn-primary { background: #667eea; color: white; flex: 1; }
-        .btn-file {
-            background: #3b82f6; color: white; flex: 1;
-            text-align: center; cursor: pointer;
-        }
-        .btn-validate { background: #10b981; color: white; }
-        .btn-reset { background: #f59e0b; color: white; }
-        .btn-export { background: #dc2626; color: white; }
-        .btn-speak-small {
-            background: #059669;
-            color: white;
-            padding: 6px 10px;
-            font-size: 0.9rem;
-            min-height: auto;
-            border-radius: 12px;
-        }
+        .btn-success { background: #10b981; color: white; }
+        .btn-warning { background: #f59e0b; color: white; }
+        .btn-danger { background: #dc2626; color: white; }
+        .btn-info { background: #3b82f6; color: white; flex: 1; }
 
-        /* Info bar */
-        .info-bar {
+        .mode-selector {
             display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: #e5e7eb;
-            padding: 12px 18px;
-            border-radius: 15px;
+            gap: 8px;
             margin-bottom: 20px;
-            gap: 10px;
             flex-wrap: wrap;
         }
 
-        .info-bar span {
+        .mode-btn {
+            flex: 1;
+            background: #e5e7eb;
+            color: #374151;
+            border: none;
+            border-radius: 18px;
             font-weight: bold;
-            font-size: 0.9rem;
-            color: #333;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            min-width: 100px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            min-height: auto;
+            padding: 14px 10px;
         }
 
-        .score-badge {
+        .mode-btn.active {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
-            padding: 6px 14px;
+            box-shadow: 0 4px 12px rgba(102,126,234,0.4);
+        }
+
+        .mode-btn .emoji { font-size: 1.5rem; }
+        .mode-btn .label { font-size: 0.75rem; }
+
+        .panel {
+            display: none;
+            background: #f3f4f6;
+            padding: 18px;
             border-radius: 20px;
+            margin-bottom: 20px;
+        }
+
+        .panel.active { display: block; }
+
+        .form-row { margin-bottom: 12px; }
+
+        .form-row label {
+            display: block;
             font-size: 0.85rem;
+            font-weight: bold;
+            color: #555;
+            margin-bottom: 6px;
+        }
+
+        .form-row select,
+        .form-row textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border-radius: 15px;
+            border: 2px solid #ddd;
+            font-size: 1rem;
+            font-family: inherit;
+            background: white;
+            -webkit-appearance: none;
+            transition: border-color 0.2s;
+        }
+
+        .form-row select:focus,
+        .form-row textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .form-row textarea {
+            font-family: monospace;
+            font-size: 13px;
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .preview-box {
+            background: white;
+            padding: 12px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            max-height: 150px;
+            overflow-y: auto;
+            margin-top: 10px;
+            border: 1px solid #e5e7eb;
+        }
+
+        .preview-box .preview-item {
+            padding: 4px 0;
+            border-bottom: 1px solid #f3f4f6;
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+        }
+
+        .preview-box .preview-item:last-child { border-bottom: none; }
+        .preview-box .de { font-weight: bold; color: #333; }
+        .preview-box .es { color: #667eea; font-style: italic; }
+
+        .badge-count {
+            display: inline-block;
+            background: #10b981;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            margin-top: 8px;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #667eea;
             font-weight: bold;
         }
 
-        /* Tabla de emparejamiento */
+        .error-msg {
+            background: #fee2e2;
+            color: #991b1b;
+            padding: 12px;
+            border-radius: 15px;
+            font-size: 0.85rem;
+            margin-top: 10px;
+        }
+
+        /* Juego */
+        .game-zone { display: none; }
+        .game-zone.active { display: block; }
+
+        .game-header {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+
+        .header-badge {
+            flex: 1;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 10px;
+            border-radius: 15px;
+            text-align: center;
+            min-width: 70px;
+        }
+
+        .header-badge .label { font-size: 0.65rem; opacity: 0.9; text-transform: uppercase; letter-spacing: 1px; }
+        .header-badge .value { font-size: 1.3rem; font-weight: bold; }
+
+        .header-badge.points { background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); }
+
+        .round-info {
+            background: #e5e7eb;
+            padding: 10px 15px;
+            border-radius: 15px;
+            font-size: 0.85rem;
+            text-align: center;
+            font-weight: bold;
+            margin-bottom: 12px;
+            color: #374151;
+        }
+
         .matching-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -151,30 +245,27 @@
         }
 
         .column-title {
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             font-weight: bold;
             color: #666;
             text-transform: uppercase;
             letter-spacing: 1px;
-            padding-bottom: 10px;
+            padding-bottom: 8px;
             border-bottom: 3px solid #667eea;
             margin-bottom: 12px;
             text-align: center;
         }
 
-        .column-title.es {
-            border-bottom-color: #f59e0b;
-        }
+        .column-title.es { border-bottom-color: #f59e0b; }
 
-        /* Columna alemana */
         .de-item {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
             background: #f9fafb;
-            padding: 12px 15px;
+            padding: 10px 12px;
             border-radius: 15px;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
             border: 2px solid #e5e7eb;
             transition: all 0.2s;
         }
@@ -182,41 +273,40 @@
         .de-number {
             background: #667eea;
             color: white;
-            width: 32px;
-            height: 32px;
+            width: 30px;
+            height: 30px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             font-weight: bold;
-            font-size: 0.95rem;
+            font-size: 0.9rem;
             flex-shrink: 0;
         }
 
         .de-word {
             flex: 1;
-            font-size: 1rem;
+            font-size: 0.95rem;
             font-weight: bold;
             color: #333;
             word-break: break-word;
         }
 
-        /* Columna española */
         .es-item {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
             background: #fffbeb;
-            padding: 12px 15px;
+            padding: 10px 12px;
             border-radius: 15px;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
             border: 2px solid #e5e7eb;
             transition: all 0.2s;
         }
 
         .es-input {
-            width: 50px;
-            height: 42px;
+            width: 48px;
+            height: 40px;
             padding: 0;
             text-align: center;
             font-size: 1.1rem;
@@ -235,24 +325,24 @@
 
         .es-word {
             flex: 1;
-            font-size: 1rem;
+            font-size: 0.95rem;
             font-weight: bold;
             color: #333;
             word-break: break-word;
         }
 
-        /* Estados de resultado */
-        .de-item.correct, .es-item.correct {
-            border-color: #10b981;
-            background: #f0fdf4;
+        .de-item.correct, .es-item.correct { border-color: #10b981; background: #f0fdf4; }
+        .de-item.incorrect, .es-item.incorrect { border-color: #ef4444; background: #fef2f2; }
+
+        .btn-speak-small {
+            background: #059669;
+            color: white;
+            padding: 5px 8px;
+            font-size: 0.85rem;
+            min-height: auto;
+            border-radius: 12px;
         }
 
-        .de-item.incorrect, .es-item.incorrect {
-            border-color: #ef4444;
-            background: #fef2f2;
-        }
-
-        /* Barra de acciones */
         .action-bar {
             display: flex;
             gap: 10px;
@@ -260,13 +350,9 @@
             margin-bottom: 15px;
         }
 
-        .action-bar button {
-            flex: 1;
-            min-width: 130px;
-        }
+        .action-bar button { flex: 1; min-width: 130px; }
 
-        /* Estado */
-        .status {
+        .status-msg {
             background: #f3f4f6;
             padding: 14px;
             border-radius: 15px;
@@ -276,18 +362,14 @@
             margin-bottom: 15px;
         }
 
-        .status.success {
+        .status-msg.success {
             background: linear-gradient(135deg, #10b981 0%, #059669 100%);
             color: white;
             font-weight: bold;
             animation: pulse 1s infinite;
         }
 
-        .status.error {
-            background: #fee2e2;
-            color: #991b1b;
-            font-weight: bold;
-        }
+        .status-msg.error { background: #fee2e2; color: #991b1b; font-weight: bold; }
 
         @keyframes pulse {
             0% { transform: scale(1); }
@@ -295,7 +377,6 @@
             100% { transform: scale(1); }
         }
 
-        /* Historial / errores */
         .errors-list {
             background: #f9fafb;
             border-radius: 20px;
@@ -305,15 +386,9 @@
             display: none;
         }
 
-        .errors-list.show {
-            display: block;
-        }
+        .errors-list.show { display: block; }
 
-        .errors-list h3 {
-            font-size: 1rem;
-            color: #991b1b;
-            margin-bottom: 10px;
-        }
+        .errors-list h3 { font-size: 1rem; color: #991b1b; margin-bottom: 10px; }
 
         .error-item {
             padding: 8px;
@@ -321,39 +396,26 @@
             font-size: 0.85rem;
         }
 
-        .error-item:last-child {
-            border-bottom: none;
+        .error-item:last-child { border-bottom: none; }
+        .error-item strong { color: #dc2626; }
+
+        .back-btn {
+            background: #e5e7eb;
+            color: #374151;
+            padding: 8px 16px;
+            font-size: 0.85rem;
+            min-height: 40px;
+            margin-bottom: 15px;
         }
 
-        .error-item strong {
-            color: #dc2626;
-        }
-
-        @media (max-width: 600px) {
-            .matching-grid {
-                gap: 10px;
-            }
-            .de-word, .es-word {
-                font-size: 0.85rem;
-            }
-            .de-number {
-                width: 28px;
-                height: 28px;
-                font-size: 0.85rem;
-            }
-            .es-input {
-                width: 42px;
-                height: 38px;
-                font-size: 1rem;
-            }
-            .column-title {
-                font-size: 0.75rem;
-            }
-            h1 { font-size: 1.4rem; }
-            .btn-speak-small {
-                padding: 5px 8px;
-                font-size: 0.8rem;
-            }
+        @media (max-width: 500px) {
+            h1 { font-size: 1.5rem; }
+            .matching-grid { gap: 10px; }
+            .de-word, .es-word { font-size: 0.8rem; }
+            .de-number { width: 26px; height: 26px; font-size: 0.8rem; }
+            .es-input { width: 40px; height: 36px; font-size: 1rem; }
+            .column-title { font-size: 0.7rem; }
+            .btn-speak-small { padding: 4px 6px; font-size: 0.75rem; }
         }
 
         @supports (padding: max(0px)) {
@@ -368,31 +430,91 @@
 <body>
 <div class="container">
 
-    <div class="card">
-        <h1>🎯 Emparejar Vocabulario</h1>
-        <div class="subtitle">🇩🇪 Alemán ↔ 🇪🇸 Español</div>
+    <!-- PANTALLA DE CONFIGURACIÓN -->
+    <div class="card" id="setupScreen">
+        <h1>🎯 Wörter zuordnen</h1>
+        <div class="subtitle">Empareja cada palabra alemana con su traducción</div>
 
-        <!-- Carga de lista -->
-        <div class="load-area">
-            <textarea id="wordPasteArea" placeholder="Pega tu lista, una por línea:&#10;Haus|casa&#10;Baum|árbol&#10;Wasser|agua"></textarea>
-            <div class="load-buttons">
-                <button class="btn-primary" id="pasteBtn">📋 Cargar lista</button>
-                <label class="btn-file" for="fileInput">📁 Archivo</label>
-                <input type="file" id="fileInput" accept=".txt" style="display:none;">
+        <div class="mode-selector">
+            <button class="mode-btn active" data-mode="sheet">
+                <span class="emoji">📚</span>
+                <span class="label">Google Sheets</span>
+            </button>
+            <button class="mode-btn" data-mode="paste">
+                <span class="emoji">✏️</span>
+                <span class="label">Pegar lista</span>
+            </button>
+            <button class="mode-btn" data-mode="file">
+                <span class="emoji">📁</span>
+                <span class="label">Subir archivo</span>
+            </button>
+        </div>
+
+        <!-- Panel Sheets -->
+        <div class="panel active" id="panelSheet">
+            <div id="sheetLoading" class="loading">⏳ Cargando materias...</div>
+            <div id="sheetForm" style="display:none;">
+                <div class="form-row">
+                    <label>📚 Materia</label>
+                    <select id="selectMateria"></select>
+                </div>
+                <div class="form-row">
+                    <label>📅 Semana</label>
+                    <select id="selectSemana"></select>
+                </div>
+                <div id="sheetPreview"></div>
+                <button class="btn-primary" id="startFromSheet" style="margin-top:12px; width:100%;" disabled>
+                    ▶️ Comenzar juego
+                </button>
+            </div>
+            <div id="sheetError" style="display:none;"></div>
+        </div>
+
+        <!-- Panel Pegar -->
+        <div class="panel" id="panelPaste">
+            <div class="form-row">
+                <label>Pega tus palabras (formato: alemán|español)</label>
+                <textarea id="pasteArea" placeholder="Haus|casa&#10;Baum|árbol&#10;Wasser|agua"></textarea>
+            </div>
+            <button class="btn-primary" id="startFromPaste" style="width:100%;">
+                ▶️ Comenzar juego
+            </button>
+        </div>
+
+        <!-- Panel Archivo -->
+        <div class="panel" id="panelFile">
+            <div class="form-row">
+                <label>Selecciona un archivo .txt</label>
+                <input type="file" id="fileInput" accept=".txt" style="width:100%; padding:12px; border-radius:15px; border:2px dashed #ddd; background:white;">
+            </div>
+            <button class="btn-primary" id="startFromFile" style="width:100%;" disabled>
+                ▶️ Comenzar juego
+            </button>
+        </div>
+    </div>
+
+    <!-- PANTALLA DE JUEGO -->
+    <div class="card game-zone" id="gameScreen">
+        <button class="back-btn" id="backBtn">← Volver al menú</button>
+
+        <div class="game-header">
+            <div class="header-badge">
+                <div class="label">Ronda</div>
+                <div class="value" id="roundCounter">1</div>
+            </div>
+            <div class="header-badge points">
+                <div class="label">⭐ Aciertos</div>
+                <div class="value" id="correctCount">0</div>
+            </div>
+            <div class="header-badge points">
+                <div class="label">❌ Errores</div>
+                <div class="value" id="incorrectCount">0</div>
             </div>
         </div>
 
-        <div class="info-bar">
-            <span id="totalInfo">📚 Sin palabras cargadas</span>
-            <span class="score-badge" id="scoreBadge">0 / 0 correctas</span>
-        </div>
+        <div class="round-info" id="roundInfo">Empareja los números con las palabras</div>
 
-        <div class="status" id="statusMsg">
-            💡 Carga tu lista para comenzar
-        </div>
-
-        <!-- Tabla de emparejamiento -->
-        <div class="matching-grid" id="matchingGrid" style="display:none;">
+        <div class="matching-grid">
             <div>
                 <div class="column-title">🇩🇪 Alemán</div>
                 <div id="deColumn"></div>
@@ -403,14 +525,14 @@
             </div>
         </div>
 
-        <!-- Acciones -->
         <div class="action-bar">
-            <button class="btn-validate" id="validateBtn">✅ Validar respuestas</button>
-            <button class="btn-reset" id="resetBtn">🔄 Reiniciar</button>
-            <button class="btn-export" id="exportBtn">📤 Exportar fallos</button>
+            <button class="btn-success" id="validateBtn">✅ Validar respuestas</button>
+            <button class="btn-warning" id="resetBtn">🔄 Reiniciar</button>
+            <button class="btn-danger" id="exportBtn">📤 Exportar fallos</button>
         </div>
 
-        <!-- Lista de errores -->
+        <div class="status-msg" id="statusMsg">Escribe el número correcto en cada casilla</div>
+
         <div class="errors-list" id="errorsList">
             <h3>❌ Errores en esta ronda</h3>
             <div id="errorsContent"></div>
@@ -421,19 +543,31 @@
 
 <script>
     // ============================================
+    // CONFIGURACIÓN
+    // ============================================
+    const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSlW8tCq8CTvMJQ4PsTPZlLJy_qwBnKX-I1IykFuq8jJMPXFXI9wL0Q-iQRlmh8kIcKVKIo0T_O6Q6g/pub?output=csv';
+    const MIN_WORDS_REQUIRED = 4;
+
+    // ============================================
     // ESTADO
     // ============================================
-    let wordList = [];             // [{de, es}]
-    let currentPairs = [];         // [{de, es, esPosition}] en la ronda actual
-    let lastErrors = [];           // [{de, es}]
+    let allSheetData = [];
+    let currentWordList = [];      // [{de, es}]
+    let currentPairs = [];          // [{number, de, es}]
+    let lastErrors = [];
     let currentRound = 1;
+    let fileWordsReady = [];
 
-    // Elementos DOM
-    const wordPasteArea = document.getElementById('wordPasteArea');
-    const totalInfo = document.getElementById('totalInfo');
-    const scoreBadge = document.getElementById('scoreBadge');
-    const statusMsg = document.getElementById('statusMsg');
-    const matchingGrid = document.getElementById('matchingGrid');
+    // DOM
+    const setupScreen = document.getElementById('setupScreen');
+    const gameScreen = document.getElementById('gameScreen');
+    const selectMateria = document.getElementById('selectMateria');
+    const selectSemana = document.getElementById('selectSemana');
+    const sheetPreview = document.getElementById('sheetPreview');
+    const startFromSheet = document.getElementById('startFromSheet');
+    const sheetLoading = document.getElementById('sheetLoading');
+    const sheetForm = document.getElementById('sheetForm');
+    const sheetError = document.getElementById('sheetError');
     const deColumn = document.getElementById('deColumn');
     const esColumn = document.getElementById('esColumn');
     const errorsList = document.getElementById('errorsList');
@@ -466,60 +600,231 @@
     }
 
     // ============================================
-    // CARGAR LISTA
+    // PARSER CSV
     // ============================================
-    function parseLine(line) {
-        const trimmed = line.trim();
-        if (!trimmed) return null;
-
-        let parts;
-        if (trimmed.includes('|')) parts = trimmed.split('|');
-        else if (trimmed.includes('\t')) parts = trimmed.split('\t');
-        else if (trimmed.includes(' - ')) parts = trimmed.split(' - ');
-        else return { de: trimmed, es: '' };
-
-        const de = (parts[0] || '').trim();
-        const es = (parts[1] || '').trim();
-        if (!de || !es) return null;
-        return { de, es };
+    function parseCSVRow(row) {
+        const result = [];
+        let current = '';
+        let inQuotes = false;
+        for (let i = 0; i < row.length; i++) {
+            const char = row[i];
+            if (char === '"') inQuotes = !inQuotes;
+            else if (char === ',' && !inQuotes) { result.push(current.trim()); current = ''; }
+            else current += char;
+        }
+        result.push(current.trim());
+        return result;
     }
 
-    function loadWords(text) {
-        const lines = text.split(/\r?\n/);
-        const parsed = lines.map(parseLine).filter(w => w && w.de && w.es);
+    function parseCSV(csvText) {
+        const lines = csvText.replace(/\r\n/g, '\n').split('\n').filter(l => l.trim());
+        if (lines.length < 2) return [];
+        const header = parseCSVRow(lines[0]).map(h => h.trim());
+        const idxMateria = header.indexOf('Materia');
+        const idxSemana = header.indexOf('Semana');
+        const idxAleman = header.indexOf('Aleman');
+        const idxEspanol = header.indexOf('Espanol');
+        if (idxMateria === -1 || idxSemana === -1 || idxAleman === -1 || idxEspanol === -1) return [];
 
-        const seen = new Set();
-        const unique = [];
-        for (const w of parsed) {
-            const key = w.de.toLowerCase();
-            if (!seen.has(key)) {
-                seen.add(key);
-                unique.push(w);
+        const data = [];
+        for (let i = 1; i < lines.length; i++) {
+            const row = parseCSVRow(lines[i]);
+            if (row.length >= 4 && row[idxAleman]) {
+                data.push({
+                    materia: row[idxMateria] || '',
+                    semana: row[idxSemana] || '',
+                    de: row[idxAleman] || '',
+                    es: row[idxEspanol] || ''
+                });
             }
         }
+        return data;
+    }
 
-        if (unique.length < 2) {
-            alert('Necesitas al menos 2 pares de palabras válidos (alemán|español).');
+    // ============================================
+    // CARGAR SHEET
+    // ============================================
+    async function loadSheet() {
+        try {
+            const res = await fetch(SHEET_URL);
+            if (!res.ok) throw new Error('HTTP ' + res.status);
+            const csv = await res.text();
+            allSheetData = parseCSV(csv);
+            if (allSheetData.length === 0) throw new Error('No se encontraron palabras.');
+
+            const materias = [...new Set(allSheetData.map(d => d.materia))].filter(m => m).sort();
+            selectMateria.innerHTML = '<option value="">-- Elige materia --</option>' +
+                materias.map(m => `<option value="${escapeHtml(m)}">${escapeHtml(m)}</option>`).join('');
+
+            sheetLoading.style.display = 'none';
+            sheetForm.style.display = 'block';
+            sheetError.style.display = 'none';
+        } catch (err) {
+            console.error(err);
+            sheetLoading.style.display = 'none';
+            sheetError.style.display = 'block';
+            sheetError.innerHTML = `<div class="error-msg">❌ No se pudo cargar el Sheet: ${escapeHtml(err.message)}<br><br>Usa "Pegar lista" mientras tanto.</div>`;
+        }
+    }
+
+    // ============================================
+    // EVENTOS SHEET
+    // ============================================
+    selectMateria.addEventListener('change', () => {
+        const materia = selectMateria.value;
+        if (!materia) {
+            selectSemana.innerHTML = '<option value="">-- Elige semana --</option>';
+            sheetPreview.innerHTML = '';
+            startFromSheet.disabled = true;
+            return;
+        }
+        const semanas = [...new Set(allSheetData.filter(d => d.materia === materia).map(d => d.semana))].filter(s => s);
+        semanas.sort((a, b) => {
+            const na = parseInt(a, 10), nb = parseInt(b, 10);
+            if (!isNaN(na) && !isNaN(nb)) return na - nb;
+            if (!isNaN(na)) return -1;
+            if (!isNaN(nb)) return 1;
+            return a.localeCompare(b);
+        });
+        selectSemana.innerHTML = '<option value="">-- Elige semana --</option>' +
+            semanas.map(s => `<option value="${escapeHtml(s)}">${escapeHtml(s)}</option>`).join('');
+        sheetPreview.innerHTML = '';
+        startFromSheet.disabled = true;
+    });
+
+    selectSemana.addEventListener('change', () => {
+        const materia = selectMateria.value;
+        const semana = selectSemana.value;
+        if (!materia || !semana) {
+            sheetPreview.innerHTML = '';
+            startFromSheet.disabled = true;
+            return;
+        }
+        const filtered = allSheetData.filter(d => d.materia === materia && d.semana === semana);
+        if (filtered.length < MIN_WORDS_REQUIRED) {
+            sheetPreview.innerHTML = `<div class="error-msg">⚠️ Necesitas al menos ${MIN_WORDS_REQUIRED} palabras (tienes ${filtered.length}).</div>`;
+            startFromSheet.disabled = true;
+            return;
+        }
+        sheetPreview.innerHTML = `
+            <div class="badge-count">✅ ${filtered.length} palabras</div>
+            <div class="preview-box">
+                ${filtered.map(d => `
+                    <div class="preview-item">
+                        <span class="de">${escapeHtml(d.de)}</span>
+                        <span class="es">${escapeHtml(d.es)}</span>
+                    </div>
+                `).join('')}
+            </div>
+        `;
+        startFromSheet.disabled = false;
+    });
+
+    startFromSheet.addEventListener('click', () => {
+        const materia = selectMateria.value;
+        const semana = selectSemana.value;
+        const filtered = allSheetData.filter(d => d.materia === materia && d.semana === semana);
+        startGame(filtered.map(d => ({ de: d.de, es: d.es })));
+    });
+
+    // ============================================
+    // MODO SELECTOR
+    // ============================================
+    document.querySelectorAll('.mode-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            const mode = btn.getAttribute('data-mode');
+            document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+            document.getElementById('panel' + mode.charAt(0).toUpperCase() + mode.slice(1)).classList.add('active');
+        });
+    });
+
+    // ============================================
+    // PARSER TEXTO
+    // ============================================
+    function parsePastedText(text) {
+        const lines = text.split(/\r?\n/);
+        const words = [];
+        for (const line of lines) {
+            const trimmed = line.trim();
+            if (!trimmed) continue;
+            let parts;
+            if (trimmed.includes('|')) parts = trimmed.split('|');
+            else if (trimmed.includes('\t')) parts = trimmed.split('\t');
+            else if (trimmed.includes(' - ')) parts = trimmed.split(' - ');
+            else continue;
+            const de = (parts[0] || '').trim();
+            const es = (parts[1] || '').trim();
+            if (de && es) words.push({ de, es });
+        }
+        return words;
+    }
+
+    document.getElementById('startFromPaste').addEventListener('click', () => {
+        const text = document.getElementById('pasteArea').value;
+        if (!text.trim()) { alert('Pega primero tus palabras.'); return; }
+        const words = parsePastedText(text);
+        if (words.length < MIN_WORDS_REQUIRED) {
+            alert(`Necesitas al menos ${MIN_WORDS_REQUIRED} palabras.`);
+            return;
+        }
+        startGame(words);
+    });
+
+    document.getElementById('fileInput').addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+            fileWordsReady = parsePastedText(ev.target.result);
+            const btn = document.getElementById('startFromFile');
+            if (fileWordsReady.length >= MIN_WORDS_REQUIRED) {
+                btn.disabled = false;
+                btn.textContent = `▶️ Comenzar (${fileWordsReady.length} palabras)`;
+            } else {
+                btn.disabled = true;
+                btn.textContent = `⚠️ Necesitas al menos ${MIN_WORDS_REQUIRED} palabras`;
+            }
+        };
+        reader.readAsText(file, 'UTF-8');
+    });
+
+    document.getElementById('startFromFile').addEventListener('click', () => {
+        if (fileWordsReady.length >= MIN_WORDS_REQUIRED) startGame(fileWordsReady);
+    });
+
+    // ============================================
+    // INICIAR JUEGO
+    // ============================================
+    function startGame(words) {
+        if (words.length < MIN_WORDS_REQUIRED) {
+            alert(`Necesitas al menos ${MIN_WORDS_REQUIRED} palabras.`);
             return;
         }
 
-        wordList = unique;
-        totalInfo.textContent = `📚 ${wordList.length} pares cargados`;
-        statusMsg.textContent = `✅ Listo. ${wordList.length} pares para emparejar.`;
-        statusMsg.className = 'status';
-        errorsList.classList.remove('show');
+        // Deduplicar por alemán
+        const seen = new Set();
+        const unique = [];
+        for (const w of words) {
+            const key = w.de.toLowerCase();
+            if (!seen.has(key)) { seen.add(key); unique.push(w); }
+        }
+
+        currentWordList = unique;
+        currentRound = 1;
+
+        setupScreen.style.display = 'none';
+        gameScreen.style.display = 'block';
+        gameScreen.classList.add('active');
 
         startRound();
     }
 
-    // ============================================
-    // INICIAR RONDA
-    // ============================================
     function startRound() {
-        // Alemanas en orden aleatorio + asignar número del 1 al N
-        const shuffledDe = shuffle(wordList);
-        // Españolas en orden aleatorio distinto
-        const shuffledEs = shuffle(wordList);
+        // Alemanas en orden aleatorio + asignar número
+        const shuffledDe = shuffle(currentWordList);
+        const shuffledEs = shuffle(currentWordList);
 
         currentPairs = shuffledDe.map((pair, idx) => ({
             number: idx + 1,
@@ -527,14 +832,22 @@
             es: pair.es
         }));
 
-        // Renderizar columnas
         renderDeColumn();
         renderEsColumn(shuffledEs);
 
-        matchingGrid.style.display = 'grid';
         errorsList.classList.remove('show');
         errorsContent.innerHTML = '';
-        updateScore();
+        lastErrors = [];
+
+        document.getElementById('roundCounter').textContent = currentRound;
+        document.getElementById('statusMsg').textContent = 'Escribe el número correcto en cada casilla';
+        document.getElementById('statusMsg').className = 'status-msg';
+
+        const btn = document.getElementById('validateBtn');
+        btn.textContent = '✅ Validar respuestas';
+        btn.disabled = false;
+
+        updateStats(0, 0);
     }
 
     function renderDeColumn() {
@@ -546,12 +859,10 @@
             </div>
         `).join('');
 
-        // Eventos para los botones de pronunciación
         deColumn.querySelectorAll('.btn-speak-small').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 e.preventDefault();
-                const text = btn.getAttribute('data-speak');
-                speakGerman(text);
+                speakGerman(btn.getAttribute('data-speak'));
             });
         });
     }
@@ -564,7 +875,6 @@
             </div>
         `).join('');
 
-        // Enter salta al siguiente input
         const inputs = esColumn.querySelectorAll('.es-input');
         inputs.forEach((input, i) => {
             input.addEventListener('keydown', (e) => {
@@ -588,21 +898,18 @@
         let correctCount = 0;
         const errors = [];
 
-        // Construir mapa: es -> número correcto
         const esToNumber = {};
-        currentPairs.forEach(p => {
-            esToNumber[normalize(p.es)] = p.number;
-        });
+        currentPairs.forEach(p => { esToNumber[normalize(p.es)] = p.number; });
 
         esItems.forEach(item => {
             const esWord = item.getAttribute('data-es');
             const input = item.querySelector('.es-input');
-            const deItem = deColumn.querySelector(`.de-item[data-de="${CSS.escape(currentPairs.find(p => p.es === esWord)?.de || '')}"]`);
+            const deWord = currentPairs.find(p => p.es === esWord)?.de || '';
+            const deItem = deColumn.querySelector(`.de-item[data-de="${CSS.escape(deWord)}"]`);
 
             const userNum = parseInt(input.value, 10);
             const correctNum = esToNumber[normalize(esWord)];
 
-            // Limpiar clases previas
             item.classList.remove('correct', 'incorrect');
             if (deItem) deItem.classList.remove('correct', 'incorrect');
 
@@ -614,7 +921,7 @@
                 item.classList.add('incorrect');
                 if (deItem) deItem.classList.add('incorrect');
                 errors.push({
-                    de: currentPairs.find(p => p.es === esWord)?.de || '',
+                    de: deWord,
                     es: esWord,
                     userNum: isNaN(userNum) ? '—' : userNum,
                     correctNum: correctNum
@@ -622,40 +929,33 @@
             }
         });
 
-        updateScore(correctCount, currentPairs.length);
+        updateStats(correctCount, currentPairs.length);
 
         if (correctCount === currentPairs.length) {
-            statusMsg.textContent = `🎉 ¡PERFECTO! ${correctCount}/${currentPairs.length} correctas. ¡Puedes continuar!`;
-            statusMsg.className = 'status success';
+            document.getElementById('statusMsg').textContent = `🎉 ¡PERFECTO! ${correctCount}/${currentPairs.length} correctas. ¡Siguiente ronda!`;
+            document.getElementById('statusMsg').className = 'status-msg success';
             errorsList.classList.remove('show');
             lastErrors = [];
 
-            // Botón cambia a "Siguiente ronda"
             const btn = document.getElementById('validateBtn');
             btn.textContent = '➡️ Siguiente ronda';
             btn.onclick = () => {
-                // Restaurar botón
                 btn.textContent = '✅ Validar respuestas';
                 btn.onclick = validate;
                 currentRound++;
                 startRound();
             };
         } else {
-            statusMsg.textContent = `❌ ${correctCount}/${currentPairs.length} correctas. ¡Intenta de nuevo!`;
-            statusMsg.className = 'status error';
+            document.getElementById('statusMsg').textContent = `❌ ${correctCount}/${currentPairs.length} correctas. ¡Intenta de nuevo!`;
+            document.getElementById('statusMsg').className = 'status-msg error';
 
-            // Guardar errores y mostrarlos
             lastErrors = errors;
             showErrors(errors);
         }
     }
 
     function showErrors(errors) {
-        if (errors.length === 0) {
-            errorsList.classList.remove('show');
-            return;
-        }
-
+        if (errors.length === 0) { errorsList.classList.remove('show'); return; }
         errorsContent.innerHTML = errors.map(e => `
             <div class="error-item">
                 <strong>${escapeHtml(e.de)}</strong> = ${escapeHtml(e.es)}
@@ -666,8 +966,9 @@
         errorsList.classList.add('show');
     }
 
-    function updateScore(correct = 0, total = currentPairs.length) {
-        scoreBadge.textContent = `${correct} / ${total} correctas`;
+    function updateStats(correct, total) {
+        document.getElementById('correctCount').textContent = correct;
+        document.getElementById('incorrectCount').textContent = total - correct;
     }
 
     // ============================================
@@ -675,19 +976,14 @@
     // ============================================
     function speakGerman(text) {
         if (!('speechSynthesis' in window)) return;
-
         window.speechSynthesis.cancel();
-        const utterance = new SpeechSynthesisUtterance(text);
-        utterance.lang = 'de-DE';
-        utterance.rate = 0.85;
-
+        const utt = new SpeechSynthesisUtterance(text);
+        utt.lang = 'de-DE';
+        utt.rate = 0.85;
         const voices = window.speechSynthesis.getVoices();
-        const germanVoice = voices.find(v => v.lang === 'de-DE' || v.lang.startsWith('de'));
-        if (germanVoice) utterance.voice = germanVoice;
-
-        window.speechSynthesis.speak(utterance);
-        statusMsg.textContent = `🔊 Pronunciando: ${text}`;
-        statusMsg.className = 'status';
+        const german = voices.find(v => v.lang === 'de-DE' || v.lang.startsWith('de'));
+        if (german) utt.voice = german;
+        window.speechSynthesis.speak(utt);
     }
 
     if ('speechSynthesis' in window) {
@@ -699,22 +995,14 @@
     // RESET
     // ============================================
     function resetGame() {
-        if (wordList.length === 0) {
-            statusMsg.textContent = '⚠️ Carga una lista primero';
-            return;
-        }
+        if (currentWordList.length === 0) return;
         currentRound = 1;
         startRound();
-        statusMsg.textContent = `🔄 Juego reiniciado`;
-        statusMsg.className = 'status';
-        // Restaurar botón
-        const btn = document.getElementById('validateBtn');
-        btn.textContent = '✅ Validar respuestas';
-        btn.onclick = validate;
+        document.getElementById('statusMsg').textContent = '🔄 Juego reiniciado';
     }
 
     // ============================================
-    // EXPORTAR ERRORES
+    // EXPORTAR FALLOS
     // ============================================
     function exportErrors() {
         if (lastErrors.length === 0) {
@@ -726,40 +1014,29 @@
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = `errores_${new Date().toISOString().slice(0,10)}.txt`;
+        a.download = `errores_woerter_zuordnen_${new Date().toISOString().slice(0,10)}.txt`;
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
         setTimeout(() => URL.revokeObjectURL(url), 1000);
-        statusMsg.textContent = `📤 Exportados ${lastErrors.length} errores`;
+        document.getElementById('statusMsg').textContent = `📤 Exportados ${lastErrors.length} errores`;
     }
 
     // ============================================
     // EVENTOS
     // ============================================
-    document.getElementById('pasteBtn').addEventListener('click', () => {
-        const text = wordPasteArea.value;
-        if (!text.trim()) {
-            alert('Pega primero la lista de palabras.');
-            return;
-        }
-        loadWords(text);
-    });
-
-    document.getElementById('fileInput').addEventListener('change', (e) => {
-        const file = e.target.files[0];
-        if (!file) return;
-        const reader = new FileReader();
-        reader.onload = (ev) => {
-            wordPasteArea.value = ev.target.result;
-            loadWords(ev.target.result);
-        };
-        reader.readAsText(file, 'UTF-8');
-    });
-
     document.getElementById('validateBtn').addEventListener('click', validate);
     document.getElementById('resetBtn').addEventListener('click', resetGame);
     document.getElementById('exportBtn').addEventListener('click', exportErrors);
+
+    document.getElementById('backBtn').addEventListener('click', () => {
+        gameScreen.style.display = 'none';
+        gameScreen.classList.remove('active');
+        setupScreen.style.display = 'block';
+    });
+
+    // Iniciar carga del Sheet
+    loadSheet();
 </script>
 </body>
 </html>
