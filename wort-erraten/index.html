@@ -1,17 +1,12 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="de">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <title>Vocabulario Deutsch-Spanisch</title>
+    <title>🔍 Wort erraten</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
         body {
             background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
@@ -21,10 +16,7 @@
             -webkit-text-size-adjust: 100%;
         }
 
-        .container {
-            max-width: 700px;
-            margin: 0 auto;
-        }
+        .container { max-width: 900px; margin: 0 auto; }
 
         .card {
             background: rgba(255,255,255,0.97);
@@ -51,39 +43,6 @@
             margin-bottom: 20px;
         }
 
-        .flag-flags {
-            text-align: center;
-            font-size: 1.5rem;
-            margin-bottom: 15px;
-        }
-
-        /* Carga de lista */
-        .load-area {
-            background: #f3f4f6;
-            padding: 15px;
-            border-radius: 20px;
-            margin-bottom: 20px;
-        }
-
-        .load-area textarea {
-            width: 100%;
-            padding: 12px;
-            border-radius: 15px;
-            border: 1px solid #ccc;
-            font-family: monospace;
-            font-size: 14px;
-            resize: vertical;
-            min-height: 90px;
-            margin-bottom: 10px;
-            -webkit-appearance: none;
-        }
-
-        .load-buttons {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-
         button {
             padding: 14px 20px;
             font-size: 1rem;
@@ -101,44 +60,40 @@
             min-height: 48px;
         }
 
-        button:active {
-            transform: scale(0.96);
-        }
+        button:active { transform: scale(0.96); }
+        button:disabled { opacity: 0.5; cursor: not-allowed; }
 
-        .btn-primary {
-            background: #667eea;
-            color: white;
-            flex: 1;
-        }
+        .btn-primary { background: #667eea; color: white; flex: 1; }
+        .btn-success { background: #10b981; color: white; }
+        .btn-warning { background: #f59e0b; color: white; }
+        .btn-danger { background: #dc2626; color: white; }
+        .btn-info { background: #3b82f6; color: white; flex: 1; }
+        .btn-secondary { background: #e5e7eb; color: #374151; }
 
-        .btn-file {
-            background: #3b82f6;
-            color: white;
-            flex: 1;
-            text-align: center;
-            cursor: pointer;
-        }
-
-        /* Modo selector */
         .mode-selector {
             display: flex;
-            gap: 10px;
+            gap: 8px;
             margin-bottom: 20px;
             flex-wrap: wrap;
         }
 
         .mode-btn {
             flex: 1;
-            padding: 14px 10px;
             background: #e5e7eb;
             color: #374151;
             border: none;
-            border-radius: 20px;
+            border-radius: 18px;
             font-weight: bold;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             cursor: pointer;
             transition: all 0.2s;
-            min-width: 140px;
+            min-width: 100px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            min-height: auto;
+            padding: 14px 10px;
         }
 
         .mode-btn.active {
@@ -147,7 +102,126 @@
             box-shadow: 0 4px 12px rgba(102,126,234,0.4);
         }
 
-        /* Estadísticas */
+        .mode-btn .emoji { font-size: 1.5rem; }
+        .mode-btn .label { font-size: 0.75rem; }
+
+        .panel {
+            display: none;
+            background: #f3f4f6;
+            padding: 18px;
+            border-radius: 20px;
+            margin-bottom: 20px;
+        }
+
+        .panel.active { display: block; }
+
+        .form-row { margin-bottom: 12px; }
+
+        .form-row label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: bold;
+            color: #555;
+            margin-bottom: 6px;
+        }
+
+        .form-row select,
+        .form-row textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border-radius: 15px;
+            border: 2px solid #ddd;
+            font-size: 1rem;
+            font-family: inherit;
+            background: white;
+            -webkit-appearance: none;
+            transition: border-color 0.2s;
+        }
+
+        .form-row select:focus,
+        .form-row textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .form-row textarea {
+            font-family: monospace;
+            font-size: 13px;
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .preview-box {
+            background: white;
+            padding: 12px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            max-height: 150px;
+            overflow-y: auto;
+            margin-top: 10px;
+            border: 1px solid #e5e7eb;
+        }
+
+        .preview-box .preview-item {
+            padding: 4px 0;
+            border-bottom: 1px solid #f3f4f6;
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+        }
+
+        .preview-box .preview-item:last-child { border-bottom: none; }
+        .preview-box .de { font-weight: bold; color: #333; }
+        .preview-box .es { color: #667eea; font-style: italic; }
+
+        .badge-count {
+            display: inline-block;
+            background: #10b981;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            margin-top: 8px;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #667eea;
+            font-weight: bold;
+        }
+
+        .error-msg {
+            background: #fee2e2;
+            color: #991b1b;
+            padding: 12px;
+            border-radius: 15px;
+            font-size: 0.85rem;
+            margin-top: 10px;
+        }
+
+        .difficulty-buttons {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+            margin: 10px 0;
+            flex-wrap: wrap;
+        }
+
+        .btn-difficulty {
+            background: #6b7280;
+            color: white;
+            padding: 8px 14px;
+            font-size: 0.8rem;
+            min-height: auto;
+        }
+
+        .btn-difficulty.active { background: #667eea; }
+
+        .game-zone { display: none; }
+        .game-zone.active { display: block; }
+
         .stats {
             display: flex;
             gap: 10px;
@@ -163,18 +237,10 @@
             text-align: center;
         }
 
-        .stat .label {
-            font-size: 0.75rem;
-            opacity: 0.9;
-        }
+        .stat .label { font-size: 0.7rem; opacity: 0.9; }
+        .stat .value { font-size: 1.4rem; font-weight: bold; }
 
-        .stat .value {
-            font-size: 1.5rem;
-            font-weight: bold;
-        }
-
-        /* Tarjeta de palabra */
-        .word-card {
+        .hidden-word-card {
             background: white;
             border: 3px solid #667eea;
             border-radius: 30px;
@@ -184,60 +250,43 @@
             transition: all 0.3s;
         }
 
-        .word-card.correct {
-            border-color: #10b981;
-            background: #f0fdf4;
-        }
+        .hidden-word-card.correct { border-color: #10b981; background: #f0fdf4; }
+        .hidden-word-card.incorrect { border-color: #ef4444; background: #fef2f2; }
 
-        .word-card.incorrect {
-            border-color: #ef4444;
-            background: #fef2f2;
-        }
-
-        .question-label {
-            font-size: 0.85rem;
-            color: #888;
-            margin-bottom: 10px;
+        .hidden-word-display {
+            font-size: 2.4rem;
             font-weight: bold;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .question-word {
-            font-size: 2.2rem;
-            font-weight: bold;
+            font-family: 'Courier New', monospace;
+            letter-spacing: 10px;
             color: #333;
-            word-break: break-word;
-            line-height: 1.3;
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 4px;
             margin-bottom: 10px;
         }
 
-        .answer-feedback {
-            font-size: 1rem;
-            margin-top: 15px;
-            padding: 10px;
-            border-radius: 15px;
-            min-height: 20px;
+        .hidden-word-display .letter {
+            display: inline-block;
+            min-width: 28px;
         }
 
-        .answer-feedback.correct {
-            background: #d1fae5;
-            color: #065f46;
+        .hidden-word-display .hidden {
+            color: #667eea;
+            border-bottom: 3px solid #667eea;
         }
 
-        .answer-feedback.incorrect {
-            background: #fee2e2;
-            color: #991b1b;
-        }
+        .hidden-word-display .revealed { color: #10b981; }
 
-        /* Input */
-        .input-area {
+        .word-counter { font-size: 0.9rem; color: #888; }
+
+        .input-row {
             display: flex;
             gap: 10px;
             margin-bottom: 15px;
         }
 
-        .input-area input {
+        .input-row input {
             flex: 1;
             padding: 16px 20px;
             font-size: 1.1rem;
@@ -246,63 +295,27 @@
             text-align: center;
             font-weight: bold;
             -webkit-appearance: none;
-            min-height: 52px;
+            min-width: 0;
         }
 
-        .input-area input:focus {
+        .input-row input:focus {
             outline: none;
             border-color: #764ba2;
             box-shadow: 0 0 0 3px rgba(118, 75, 162, 0.15);
         }
 
-        .input-area input:disabled {
-            background: #f3f4f6;
-        }
+        .input-row input:disabled { background: #f3f4f6; }
 
-        .btn-check {
-            background: #10b981;
-            color: white;
-            padding: 16px 24px;
-        }
-
-        /* Botones de acción */
-        .action-buttons {
-            display: flex;
+        .action-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
             gap: 10px;
-            flex-wrap: wrap;
             margin-bottom: 15px;
         }
 
-        .action-buttons button {
-            flex: 1;
-            min-width: 130px;
-            font-size: 0.9rem;
-        }
-
-        .btn-speak {
-            background: #059669;
-            color: white;
-        }
-
-        .btn-skip {
-            background: #f59e0b;
-            color: white;
-        }
-
-        .btn-reset {
-            background: #6b7280;
-            color: white;
-        }
-
-        .btn-export {
-            background: #dc2626;
-            color: white;
-        }
-
-        /* Estado */
-        .status {
+        .status-msg {
             background: #f3f4f6;
-            padding: 12px;
+            padding: 14px;
             border-radius: 15px;
             text-align: center;
             font-size: 0.9rem;
@@ -310,25 +323,20 @@
             margin-bottom: 15px;
         }
 
-        .status.finished {
+        .status-msg.success {
             background: linear-gradient(135deg, #10b981 0%, #059669 100%);
             color: white;
             font-weight: bold;
         }
 
-        /* Historial */
+        .status-msg.error { background: #fee2e2; color: #991b1b; font-weight: bold; }
+
         .history {
             background: #f9fafb;
             border-radius: 20px;
             padding: 15px;
-            max-height: 180px;
+            max-height: 200px;
             overflow-y: auto;
-        }
-
-        .history h3 {
-            font-size: 1rem;
-            color: #333;
-            margin-bottom: 10px;
         }
 
         .history-item {
@@ -340,37 +348,23 @@
             gap: 10px;
         }
 
-        .history-item:last-child {
-            border-bottom: none;
-        }
+        .history-item:last-child { border-bottom: none; }
 
-        .history-item .word {
-            flex: 1;
-            word-break: break-word;
-        }
-
-        .history-item .result-correct {
-            color: #10b981;
-            font-weight: bold;
-        }
-
-        .history-item .result-incorrect {
-            color: #ef4444;
-            font-weight: bold;
-        }
-
-        /* Info badge */
-        .info-badge {
+        .back-btn {
             background: #e5e7eb;
-            padding: 10px;
-            border-radius: 15px;
-            text-align: center;
+            color: #374151;
+            padding: 8px 16px;
             font-size: 0.85rem;
-            font-weight: bold;
+            min-height: 40px;
             margin-bottom: 15px;
         }
 
-        /* iPhone safe area */
+        @media (max-width: 500px) {
+            h1 { font-size: 1.5rem; }
+            .hidden-word-display { font-size: 1.8rem; letter-spacing: 6px; }
+            .hidden-word-display .letter { min-width: 22px; }
+        }
+
         @supports (padding: max(0px)) {
             body {
                 padding-left: max(15px, env(safe-area-inset-left));
@@ -378,56 +372,100 @@
                 padding-bottom: max(15px, env(safe-area-inset-bottom));
             }
         }
-
-        @media (max-width: 480px) {
-            .question-word {
-                font-size: 1.7rem;
-            }
-            h1 {
-                font-size: 1.5rem;
-            }
-            .action-buttons button {
-                min-width: 100%;
-            }
-        }
     </style>
 </head>
 <body>
 <div class="container">
 
-    <div class="card">
-        <h1>🇩🇪 Vocabulario 🇪🇸</h1>
-        <div class="subtitle">Alemán ↔ Español</div>
-        <div class="flag-flags">🐝</div>
+    <div class="card" id="setupScreen">
+        <h1>🔍 Wort erraten</h1>
+        <div class="subtitle">Adivina la palabra con letras ocultas</div>
 
-        <!-- Área de carga -->
-        <div class="load-area">
-            <textarea id="wordPasteArea" placeholder="Pega tu lista aquí, una por línea:&#10;Haus|casa&#10;Baum|árbol&#10;Wasser|agua"></textarea>
-            <div class="load-buttons">
-                <button class="btn-primary" id="pasteBtn">📋 Cargar lista</button>
-                <label class="btn-file" for="fileInput">📁 Archivo</label>
-                <input type="file" id="fileInput" accept=".txt" style="display:none;">
-            </div>
-        </div>
-
-        <div class="info-badge" id="totalInfo">
-            📚 Carga tu lista para comenzar
-        </div>
-
-        <!-- Selector de modo -->
         <div class="mode-selector">
-            <button class="mode-btn active" data-mode="es-to-de">
-                🇪🇸 → 🇩🇪<br><small>Ver español, escribir alemán</small>
+            <button class="mode-btn active" data-mode="sheet">
+                <span class="emoji">📚</span>
+                <span class="label">Google Sheets</span>
             </button>
-            <button class="mode-btn" data-mode="de-to-es">
-                🇩🇪 → 🇪🇸<br><small>Ver alemán, escribir español</small>
+            <button class="mode-btn" data-mode="paste">
+                <span class="emoji">✏️</span>
+                <span class="label">Pegar lista</span>
+            </button>
+            <button class="mode-btn" data-mode="file">
+                <span class="emoji">📁</span>
+                <span class="label">Subir archivo</span>
             </button>
         </div>
 
-        <!-- Estadísticas -->
+        <div class="panel active" id="panelSheet">
+            <div id="sheetLoading" class="loading">⏳ Cargando materias...</div>
+            <div id="sheetForm" style="display:none;">
+                <div class="form-row">
+                    <label>📚 Materia</label>
+                    <select id="selectMateria"></select>
+                </div>
+                <div class="form-row">
+                    <label>📅 Semana</label>
+                    <select id="selectSemana"></select>
+                </div>
+                <div class="form-row">
+                    <label>🎯 Dificultad</label>
+                    <div class="difficulty-buttons" data-target="sheet">
+                        <button class="btn-difficulty active" data-diff="easy">😊 Fácil</button>
+                        <button class="btn-difficulty" data-diff="medium">🤔 Medio</button>
+                        <button class="btn-difficulty" data-diff="hard">😈 Difícil</button>
+                    </div>
+                </div>
+                <div id="sheetPreview"></div>
+                <button class="btn-primary" id="startFromSheet" style="margin-top:12px; width:100%;" disabled>
+                    ▶️ Comenzar juego
+                </button>
+            </div>
+            <div id="sheetError" style="display:none;"></div>
+        </div>
+
+        <div class="panel" id="panelPaste">
+            <div class="form-row">
+                <label>Pega tus palabras (formato: alemán|español, una por línea)</label>
+                <textarea id="pasteArea" placeholder="Haus|casa&#10;Baum|árbol&#10;Wasser|agua"></textarea>
+            </div>
+            <div class="form-row">
+                <label>🎯 Dificultad</label>
+                <div class="difficulty-buttons" data-target="paste">
+                    <button class="btn-difficulty active" data-diff="easy">😊 Fácil</button>
+                    <button class="btn-difficulty" data-diff="medium">🤔 Medio</button>
+                    <button class="btn-difficulty" data-diff="hard">😈 Difícil</button>
+                </div>
+            </div>
+            <button class="btn-primary" id="startFromPaste" style="width:100%;">
+                ▶️ Comenzar juego
+            </button>
+        </div>
+
+        <div class="panel" id="panelFile">
+            <div class="form-row">
+                <label>Selecciona un archivo .txt</label>
+                <input type="file" id="fileInput" accept=".txt" style="width:100%; padding:12px; border-radius:15px; border:2px dashed #ddd; background:white;">
+            </div>
+            <div class="form-row">
+                <label>🎯 Dificultad</label>
+                <div class="difficulty-buttons" data-target="file">
+                    <button class="btn-difficulty active" data-diff="easy">😊 Fácil</button>
+                    <button class="btn-difficulty" data-diff="medium">🤔 Medio</button>
+                    <button class="btn-difficulty" data-diff="hard">😈 Difícil</button>
+                </div>
+            </div>
+            <button class="btn-primary" id="startFromFile" style="width:100%;" disabled>
+                ▶️ Comenzar juego
+            </button>
+        </div>
+    </div>
+
+    <div class="card game-zone" id="gameScreen">
+        <button class="back-btn" id="backBtn">← Volver al menú</button>
+
         <div class="stats">
             <div class="stat">
-                <div class="label">✅ Aciertos</div>
+                <div class="label">✅ Correctas</div>
                 <div class="value" id="correctCount">0</div>
             </div>
             <div class="stat">
@@ -440,35 +478,27 @@
             </div>
         </div>
 
-        <!-- Tarjeta de palabra -->
-        <div class="word-card" id="wordCard">
-            <div class="question-label" id="questionLabel">🇪🇸 Español</div>
-            <div class="question-word" id="questionWord">📚 Carga una lista</div>
-            <div class="answer-feedback" id="answerFeedback"></div>
+        <div class="hidden-word-card" id="wordCard">
+            <div class="hidden-word-display" id="hiddenWordDisplay">...</div>
+            <div class="word-counter" id="wordCounter"></div>
         </div>
 
-        <!-- Input -->
-        <div class="input-area">
-            <input type="text" id="userInput" placeholder="Escribe aquí..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" enterkeyhint="done">
-            <button class="btn-check" id="checkBtn">✅</button>
+        <div class="input-row">
+            <input type="text" id="userInput" placeholder="Escribe la palabra..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" enterkeyhint="done">
+            <button class="btn-success" id="checkBtn">✅</button>
         </div>
 
-        <!-- Botones de acción -->
-        <div class="action-buttons">
-            <button class="btn-speak" id="speakBtn">🔊 Pronunciar</button>
-            <button class="btn-skip" id="skipBtn">⏭️ Saltar</button>
-            <button class="btn-reset" id="resetBtn">🔄 Reiniciar</button>
-            <button class="btn-export" id="exportBtn">📤 Errores</button>
+        <div class="action-grid">
+            <button class="btn-info" id="hintBtn">💡 Pista</button>
+            <button class="btn-info" id="speakBtn">🔊 Escuchar</button>
+            <button class="btn-warning" id="skipBtn">⏭️ Saltar</button>
+            <button class="btn-danger" id="exportBtn">📤 Errores</button>
         </div>
 
-        <!-- Estado -->
-        <div class="status" id="statusMsg">
-            💡 Pega tu lista de palabras en la parte superior
-        </div>
+        <div class="status-msg" id="statusMsg">Escribe la palabra correcta</div>
 
-        <!-- Historial -->
         <div class="history">
-            <h3>📜 Historial reciente</h3>
+            <strong style="display:block; margin-bottom:8px;">📜 Historial reciente</strong>
             <div id="historyList">Aún no hay respuestas...</div>
         </div>
     </div>
@@ -477,36 +507,33 @@
 
 <script>
     // ============================================
-    // ESTADO
+    // CONFIGURACIÓN
     // ============================================
-    let wordList = [];           // [{ de, es }]
-    let remaining = [];          // palabras por preguntar
-    let currentWord = null;      // { de, es }
-    let correct = [];
-    let incorrect = [];
-    let mode = 'es-to-de';       // 'es-to-de' o 'de-to-es'
-    let answered = false;        // si ya respondió la actual
+    const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSlW8tCq8CTvMJQ4PsTPZlLJy_qwBnKX-I1IykFuq8jJMPXFXI9wL0Q-iQRlmh8kIcKVKIo0T_O6Q6g/pub?output=csv';
 
     // ============================================
-    // ELEMENTOS DOM
+    // ESTADO
     // ============================================
-    const wordPasteArea = document.getElementById('wordPasteArea');
-    const totalInfo = document.getElementById('totalInfo');
-    const wordCard = document.getElementById('wordCard');
-    const questionLabel = document.getElementById('questionLabel');
-    const questionWord = document.getElementById('questionWord');
-    const answerFeedback = document.getElementById('answerFeedback');
-    const userInput = document.getElementById('userInput');
-    const checkBtn = document.getElementById('checkBtn');
-    const speakBtn = document.getElementById('speakBtn');
-    const skipBtn = document.getElementById('skipBtn');
-    const resetBtn = document.getElementById('resetBtn');
-    const exportBtn = document.getElementById('exportBtn');
-    const statusMsg = document.getElementById('statusMsg');
-    const correctCountEl = document.getElementById('correctCount');
-    const incorrectCountEl = document.getElementById('incorrectCount');
-    const remainingCountEl = document.getElementById('remainingCount');
-    const historyList = document.getElementById('historyList');
+    let allSheetData = [];
+    let currentWordList = [];
+    let remainingWords = [];
+    let correctWords = [];
+    let incorrectWords = [];
+    let currentWordData = null;
+    let gameFinished = false;
+    let difficulty = 'easy';
+    let fileWordsReady = [];
+
+    // DOM
+    const setupScreen = document.getElementById('setupScreen');
+    const gameScreen = document.getElementById('gameScreen');
+    const selectMateria = document.getElementById('selectMateria');
+    const selectSemana = document.getElementById('selectSemana');
+    const sheetPreview = document.getElementById('sheetPreview');
+    const startFromSheet = document.getElementById('startFromSheet');
+    const sheetLoading = document.getElementById('sheetLoading');
+    const sheetForm = document.getElementById('sheetForm');
+    const sheetError = document.getElementById('sheetError');
 
     // ============================================
     // UTILIDADES
@@ -526,349 +553,495 @@
         return div.innerHTML;
     }
 
-    // Normalizar: sin mayúsculas, sin acentos, sin espacios extra
-    function normalize(text) {
-        return text
-            .toString()
-            .trim()
-            .toLowerCase()
-            .normalize('NFD')
-            .replace(/[\u0300-\u036f]/g, '')  // quitar tildes
-            .replace(/ß/g, 'ss')              // ß → ss
-            .replace(/\s+/g, ' ');            // espacios múltiples → 1
+    function getHiddenPercentage() {
+        switch (difficulty) {
+            case 'easy': return 0.4;
+            case 'medium': return 0.6;
+            case 'hard': return 0.8;
+            default: return 0.5;
+        }
     }
 
     // ============================================
-    // CARGAR LISTA
+    // PARSER CSV
     // ============================================
-    function parseLine(line) {
-        const trimmed = line.trim();
-        if (!trimmed) return null;
+    function parseCSVRow(row) {
+        const result = [];
+        let current = '';
+        let inQuotes = false;
+        for (let i = 0; i < row.length; i++) {
+            const char = row[i];
+            if (char === '"') {
+                inQuotes = !inQuotes;
+            } else if (char === ',' && !inQuotes) {
+                result.push(current.trim());
+                current = '';
+            } else {
+                current += char;
+            }
+        }
+        result.push(current.trim());
+        return result;
+    }
 
-        // Formato: alemán|español  o  alemán - español
-        let parts;
-        if (trimmed.includes('|')) {
-            parts = trimmed.split('|');
-        } else if (trimmed.includes('\t')) {
-            parts = trimmed.split('\t');
-        } else if (trimmed.includes(' - ')) {
-            parts = trimmed.split(' - ');
-        } else {
-            // Solo una palabra: la usamos como alemana sin traducción
-            return { de: trimmed, es: '' };
+    function parseCSV(csvText) {
+        const lines = csvText.replace(/\r\n/g, '\n').split('\n').filter(l => l.trim());
+        if (lines.length < 2) return [];
+
+        const header = parseCSVRow(lines[0]).map(h => h.trim());
+        const idxMateria = header.indexOf('Materia');
+        const idxSemana = header.indexOf('Semana');
+        const idxAleman = header.indexOf('Aleman');
+        const idxEspanol = header.indexOf('Espanol');
+
+        if (idxMateria === -1 || idxSemana === -1 || idxAleman === -1 || idxEspanol === -1) {
+            return [];
         }
 
-        const de = (parts[0] || '').trim();
-        const es = (parts[1] || '').trim();
-        if (!de) return null;
-        return { de, es };
+        const data = [];
+        for (let i = 1; i < lines.length; i++) {
+            const row = parseCSVRow(lines[i]);
+            if (row.length >= 4 && row[idxAleman]) {
+                data.push({
+                    materia: row[idxMateria] || '',
+                    semana: row[idxSemana] || '',
+                    de: row[idxAleman] || '',
+                    es: row[idxEspanol] || ''
+                });
+            }
+        }
+        return data;
     }
 
-    function loadWords(text) {
-        const lines = text.split(/\r?\n/);
-        const parsed = lines.map(parseLine).filter(w => w && w.de);
+    // ============================================
+    // CARGAR SHEET
+    // ============================================
+    async function loadSheet() {
+        try {
+            const res = await fetch(SHEET_URL);
+            if (!res.ok) throw new Error('HTTP ' + res.status);
+            const csv = await res.text();
+            allSheetData = parseCSV(csv);
 
-        // Eliminar duplicados por alemán
-        const seen = new Set();
-        const unique = [];
-        for (const w of parsed) {
-            const key = w.de.toLowerCase();
-            if (!seen.has(key)) {
-                seen.add(key);
-                unique.push(w);
+            if (allSheetData.length === 0) {
+                throw new Error('No se encontraron palabras. Revisa que los encabezados sean exactos.');
+            }
+
+            const materias = [...new Set(allSheetData.map(d => d.materia))].filter(m => m).sort();
+            selectMateria.innerHTML = '<option value="">-- Elige materia --</option>' +
+                materias.map(m => `<option value="${escapeHtml(m)}">${escapeHtml(m)}</option>`).join('');
+
+            sheetLoading.style.display = 'none';
+            sheetForm.style.display = 'block';
+            sheetError.style.display = 'none';
+        } catch (err) {
+            console.error(err);
+            sheetLoading.style.display = 'none';
+            sheetError.style.display = 'block';
+            sheetError.innerHTML = `<div class="error-msg">❌ No se pudo cargar el Sheet: ${escapeHtml(err.message)}<br><br>Puedes usar "Pegar lista" mientras tanto.</div>`;
+        }
+    }
+
+    // ============================================
+    // EVENTOS DEL SHEET
+    // ============================================
+    selectMateria.addEventListener('change', () => {
+        const materia = selectMateria.value;
+        if (!materia) {
+            selectSemana.innerHTML = '<option value="">-- Elige semana --</option>';
+            sheetPreview.innerHTML = '';
+            startFromSheet.disabled = true;
+            return;
+        }
+
+        const semanas = [...new Set(
+            allSheetData.filter(d => d.materia === materia).map(d => d.semana)
+        )].filter(s => s);
+
+        semanas.sort((a, b) => {
+            const na = parseInt(a, 10);
+            const nb = parseInt(b, 10);
+            if (!isNaN(na) && !isNaN(nb)) return na - nb;
+            if (!isNaN(na)) return -1;
+            if (!isNaN(nb)) return 1;
+            return a.localeCompare(b);
+        });
+
+        selectSemana.innerHTML = '<option value="">-- Elige semana --</option>' +
+            semanas.map(s => `<option value="${escapeHtml(s)}">${escapeHtml(s)}</option>`).join('');
+
+        sheetPreview.innerHTML = '';
+        startFromSheet.disabled = true;
+    });
+
+    selectSemana.addEventListener('change', () => {
+        const materia = selectMateria.value;
+        const semana = selectSemana.value;
+        if (!materia || !semana) {
+            sheetPreview.innerHTML = '';
+            startFromSheet.disabled = true;
+            return;
+        }
+
+        const filtered = allSheetData.filter(d => d.materia === materia && d.semana === semana);
+
+        if (filtered.length === 0) {
+            sheetPreview.innerHTML = '<div class="error-msg">No hay palabras para esta selección.</div>';
+            startFromSheet.disabled = true;
+            return;
+        }
+
+        sheetPreview.innerHTML = `
+            <div class="badge-count">✅ ${filtered.length} palabras</div>
+            <div class="preview-box">
+                ${filtered.map(d => `
+                    <div class="preview-item">
+                        <span class="de">${escapeHtml(d.de)}</span>
+                        <span class="es">${escapeHtml(d.es)}</span>
+                    </div>
+                `).join('')}
+            </div>
+        `;
+        startFromSheet.disabled = false;
+    });
+
+    startFromSheet.addEventListener('click', () => {
+        const materia = selectMateria.value;
+        const semana = selectSemana.value;
+        const filtered = allSheetData.filter(d => d.materia === materia && d.semana === semana);
+        startGame(filtered.map(d => ({ de: d.de, es: d.es })));
+    });
+
+    // ============================================
+    // MODO SELECTOR
+    // ============================================
+    document.querySelectorAll('.mode-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            const mode = btn.getAttribute('data-mode');
+            document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+            document.getElementById('panel' + mode.charAt(0).toUpperCase() + mode.slice(1)).classList.add('active');
+        });
+    });
+
+    // ============================================
+    // DIFICULTAD
+    // ============================================
+    document.querySelectorAll('.btn-difficulty').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const parent = btn.closest('.difficulty-buttons');
+            parent.querySelectorAll('.btn-difficulty').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            difficulty = btn.getAttribute('data-diff');
+        });
+    });
+
+    // ============================================
+    // PEGAR TEXTO
+    // ============================================
+    function parsePastedText(text) {
+        const lines = text.split(/\r?\n/);
+        const words = [];
+        for (const line of lines) {
+            const trimmed = line.trim();
+            if (!trimmed) continue;
+            let parts;
+            if (trimmed.includes('|')) parts = trimmed.split('|');
+            else if (trimmed.includes('\t')) parts = trimmed.split('\t');
+            else if (trimmed.includes(' - ')) parts = trimmed.split(' - ');
+            else continue;
+            const de = (parts[0] || '').trim();
+            const es = (parts[1] || '').trim();
+            if (de && es) words.push({ de, es });
+        }
+        return words;
+    }
+
+    document.getElementById('startFromPaste').addEventListener('click', () => {
+        const text = document.getElementById('pasteArea').value;
+        if (!text.trim()) {
+            alert('Pega primero tus palabras.');
+            return;
+        }
+        const words = parsePastedText(text);
+        if (words.length === 0) {
+            alert('No se encontraron palabras válidas. Formato: alemán|español');
+            return;
+        }
+        startGame(words);
+    });
+
+    // ============================================
+    // SUBIR ARCHIVO
+    // ============================================
+    document.getElementById('fileInput').addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+            fileWordsReady = parsePastedText(ev.target.result);
+            const btn = document.getElementById('startFromFile');
+            if (fileWordsReady.length > 0) {
+                btn.disabled = false;
+                btn.textContent = `▶️ Comenzar (${fileWordsReady.length} palabras)`;
+            } else {
+                btn.disabled = true;
+                btn.textContent = '⚠️ Sin palabras válidas';
+            }
+        };
+        reader.readAsText(file, 'UTF-8');
+    });
+
+    document.getElementById('startFromFile').addEventListener('click', () => {
+        if (fileWordsReady.length > 0) {
+            startGame(fileWordsReady);
+        }
+    });
+
+    // ============================================
+    // INICIAR JUEGO
+    // ============================================
+    function startGame(words) {
+        if (words.length === 0) {
+            alert('No hay palabras para jugar.');
+            return;
+        }
+
+        currentWordList = shuffle([...words]);
+        remainingWords = [...currentWordList];
+        correctWords = [];
+        incorrectWords = [];
+        currentWordData = null;
+        gameFinished = false;
+
+        setupScreen.style.display = 'none';
+        gameScreen.style.display = 'block';
+        gameScreen.classList.add('active');
+
+        document.getElementById('userInput').disabled = false;
+        updateStats();
+        updateHistory();
+        loadNextWord();
+    }
+
+    function loadNextWord() {
+        if (remainingWords.length === 0) {
+            gameFinished = true;
+            currentWordData = null;
+            document.getElementById('hiddenWordDisplay').innerHTML = '<span style="color:#999; font-size:1.5rem;">🎉 ¡Terminaste!</span>';
+            document.getElementById('wordCounter').textContent = '';
+            document.getElementById('wordCard').classList.remove('correct', 'incorrect');
+            document.getElementById('statusMsg').textContent = `🏆 ¡Completado! Aciertos: ${correctWords.length} | Errores: ${incorrectWords.length}`;
+            document.getElementById('statusMsg').className = 'status-msg success';
+            document.getElementById('userInput').disabled = true;
+            updateStats();
+            return;
+        }
+
+        gameFinished = false;
+        const randomIndex = Math.floor(Math.random() * remainingWords.length);
+        const word = remainingWords[randomIndex];
+        currentWordData = generateHiddenWord(word.de);
+
+        renderHiddenWord(currentWordData);
+        document.getElementById('wordCounter').textContent = `Palabra #${correctWords.length + incorrectWords.length + 1} de ${currentWordList.length}`;
+        document.getElementById('wordCard').classList.remove('correct', 'incorrect');
+        document.getElementById('statusMsg').textContent = `🔍 Adivina: ${currentWordData.hiddenIndices.length} letras ocultas`;
+        document.getElementById('statusMsg').className = 'status-msg';
+        document.getElementById('userInput').value = '';
+        document.getElementById('userInput').disabled = false;
+        setTimeout(() => document.getElementById('userInput').focus(), 100);
+        updateStats();
+    }
+
+    function generateHiddenWord(word) {
+        const chars = word.split('');
+        const total = chars.length;
+        let hideCount = Math.max(1, Math.floor(total * getHiddenPercentage()));
+        if (hideCount >= total) hideCount = Math.max(1, total - 1);
+
+        const indices = Array.from({ length: total }, (_, i) => i);
+        const shuffledIndices = shuffle(indices);
+        const hiddenIndices = shuffledIndices.slice(0, hideCount).sort((a, b) => a - b);
+
+        const display = chars.map((char, i) => ({
+            char,
+            hidden: hiddenIndices.includes(i)
+        }));
+
+        return { display, hiddenIndices, word };
+    }
+
+    function renderHiddenWord(data) {
+        const html = data.display.map(item =>
+            item.hidden
+                ? `<span class="letter hidden">_</span>`
+                : `<span class="letter revealed">${escapeHtml(item.char)}</span>`
+        ).join('');
+        document.getElementById('hiddenWordDisplay').innerHTML = html;
+    }
+
+    // ============================================
+    // VERIFICAR
+    // ============================================
+    function checkAnswer() {
+        if (!currentWordData || gameFinished) return;
+
+        const userAns = document.getElementById('userInput').value.trim();
+        if (!userAns) {
+            document.getElementById('statusMsg').textContent = '⚠️ Escribe una respuesta';
+            return;
+        }
+
+        const isCorrect = userAns.toLowerCase() === currentWordData.word.toLowerCase();
+
+        const idx = remainingWords.findIndex(w => w.de === currentWordData.word);
+        if (idx !== -1) {
+            const wordObj = remainingWords[idx];
+            remainingWords.splice(idx, 1);
+
+            if (isCorrect) {
+                correctWords.push(wordObj);
+                document.getElementById('wordCard').classList.add('correct');
+                document.getElementById('statusMsg').textContent = `✅ ¡Correcto! ${wordObj.de} = ${wordObj.es}`;
+                document.getElementById('statusMsg').className = 'status-msg success';
+            } else {
+                incorrectWords.push(wordObj);
+                document.getElementById('wordCard').classList.add('incorrect');
+                document.getElementById('statusMsg').textContent = `❌ Era: ${wordObj.de} = ${wordObj.es}`;
+                document.getElementById('statusMsg').className = 'status-msg error';
             }
         }
 
-        if (unique.length === 0) {
-            alert('No se encontraron palabras válidas. Revisa el formato.');
-            return;
-        }
-
-        wordList = shuffle(unique);
-        remaining = [...wordList];
-        correct = [];
-        incorrect = [];
-        currentWord = null;
-        answered = false;
-
-        totalInfo.textContent = `📚 ${wordList.length} palabras cargadas`;
-        statusMsg.textContent = `✅ Listo. ${wordList.length} palabras para practicar.`;
-        statusMsg.classList.remove('finished');
-
-        updateStats();
-        updateHistory();
-        nextWord();
-    }
-
-    // ============================================
-    // SIGUIENTE PALABRA
-    // ============================================
-    function nextWord() {
-        answered = false;
-        answerFeedback.textContent = '';
-        answerFeedback.className = 'answer-feedback';
-        wordCard.classList.remove('correct', 'incorrect');
-        userInput.value = '';
-        userInput.disabled = false;
-
-        if (remaining.length === 0) {
-            currentWord = null;
-            questionWord.textContent = '🎉 ¡Terminaste!';
-            questionLabel.textContent = '';
-            userInput.disabled = true;
-            statusMsg.textContent = `🏆 ¡Completado! Aciertos: ${correct.length} | Errores: ${incorrect.length}`;
-            statusMsg.classList.add('finished');
-            return;
-        }
-
-        const idx = Math.floor(Math.random() * remaining.length);
-        currentWord = remaining[idx];
-
-        if (mode === 'es-to-de') {
-            questionLabel.textContent = '🇪🇸 Español → escribe en 🇩🇪 Alemán';
-            questionWord.textContent = currentWord.es || currentWord.de;
-        } else {
-            questionLabel.textContent = '🇩🇪 Alemán → escribe en 🇪🇸 Español';
-            questionWord.textContent = currentWord.de;
-        }
-
-        // Enfocar input en móviles
-        if (window.innerWidth > 400) {
-            setTimeout(() => userInput.focus(), 100);
-        }
-    }
-
-    // ============================================
-    // VERIFICAR RESPUESTA
-    // ============================================
-    function checkAnswer() {
-        if (!currentWord || answered) return;
-
-        const userAns = normalize(userInput.value);
-        if (!userAns) {
-            statusMsg.textContent = '⚠️ Escribe una respuesta primero';
-            return;
-        }
-
-        let expected;
-        if (mode === 'es-to-de') {
-            expected = normalize(currentWord.de);
-        } else {
-            expected = normalize(currentWord.es);
-        }
-
-        if (!expected) {
-            // No hay traducción para comparar
-            answerFeedback.textContent = 'ℹ️ Esta palabra no tiene traducción. Saltando...';
-            answerFeedback.className = 'answer-feedback';
-            setTimeout(() => {
-                skipWord();
-            }, 1200);
-            return;
-        }
-
-        const isCorrect = userAns === expected;
-
-        if (isCorrect) {
-            correct.push(currentWord);
-            wordCard.classList.add('correct');
-            answerFeedback.textContent = `✅ ¡Correcto! ${currentWord.de} = ${currentWord.es}`;
-            answerFeedback.className = 'answer-feedback correct';
-            statusMsg.textContent = `✅ ¡Bien hecho!`;
-        } else {
-            incorrect.push(currentWord);
-            wordCard.classList.add('incorrect');
-            const correctAnswer = mode === 'es-to-de' ? currentWord.de : currentWord.es;
-            answerFeedback.textContent = `❌ Incorrecto. Respuesta: ${correctAnswer}`;
-            answerFeedback.className = 'answer-feedback incorrect';
-            statusMsg.textContent = `❌ La respuesta correcta era: ${correctAnswer}`;
-        }
-
-        // Remover de remaining
-        const idx = remaining.indexOf(currentWord);
-        if (idx !== -1) remaining.splice(idx, 1);
-
-        answered = true;
-        userInput.disabled = true;
+        document.getElementById('userInput').disabled = true;
         updateStats();
         updateHistory();
 
-        // Auto-siguiente después de 2 segundos
-        setTimeout(() => {
-            if (answered) nextWord();
-        }, 2000);
+        const full = currentWordData.word.split('').map(c =>
+            `<span class="letter revealed">${escapeHtml(c)}</span>`
+        ).join('');
+        document.getElementById('hiddenWordDisplay').innerHTML = full;
+
+        setTimeout(() => loadNextWord(), 1800);
+    }
+
+    function revealHint() {
+        if (!currentWordData || gameFinished) return;
+        for (let i = 0; i < currentWordData.display.length; i++) {
+            if (currentWordData.display[i].hidden) {
+                currentWordData.display[i].hidden = false;
+                renderHiddenWord(currentWordData);
+                document.getElementById('statusMsg').textContent = '💡 Letra revelada';
+                return;
+            }
+        }
     }
 
     function skipWord() {
-        if (!currentWord || answered) return;
-        incorrect.push(currentWord);
-        const idx = remaining.indexOf(currentWord);
-        if (idx !== -1) remaining.splice(idx, 1);
-        answered = true;
+        if (!currentWordData || gameFinished) return;
+        const idx = remainingWords.findIndex(w => w.de === currentWordData.word);
+        if (idx !== -1) {
+            incorrectWords.push(remainingWords[idx]);
+            remainingWords.splice(idx, 1);
+        }
         updateStats();
         updateHistory();
-        nextWord();
+        loadNextWord();
+    }
+
+    function speakWord() {
+        if (!currentWordData) return;
+        if (!('speechSynthesis' in window)) return;
+        window.speechSynthesis.cancel();
+        const utt = new SpeechSynthesisUtterance(currentWordData.word);
+        utt.lang = 'de-DE';
+        utt.rate = 0.85;
+        const voices = window.speechSynthesis.getVoices();
+        const german = voices.find(v => v.lang === 'de-DE' || v.lang.startsWith('de'));
+        if (german) utt.voice = german;
+        window.speechSynthesis.speak(utt);
     }
 
     // ============================================
     // ESTADÍSTICAS E HISTORIAL
     // ============================================
     function updateStats() {
-        correctCountEl.textContent = correct.length;
-        incorrectCountEl.textContent = incorrect.length;
-        remainingCountEl.textContent = remaining.length;
+        document.getElementById('correctCount').textContent = correctWords.length;
+        document.getElementById('incorrectCount').textContent = incorrectWords.length;
+        document.getElementById('remainingCount').textContent = remainingWords.length;
     }
 
     function updateHistory() {
-        const all = [];
-        correct.forEach(w => all.push({ ...w, result: 'correct' }));
-        incorrect.forEach(w => all.push({ ...w, result: 'incorrect' }));
-
+        const all = [
+            ...correctWords.map(w => ({ ...w, r: 'correct' })),
+            ...incorrectWords.map(w => ({ ...w, r: 'incorrect' }))
+        ];
         if (all.length === 0) {
-            historyList.innerHTML = 'Aún no hay respuestas...';
+            document.getElementById('historyList').innerHTML = 'Aún no hay respuestas...';
             return;
         }
-
-        // Últimas 10
         const recent = all.slice(-10).reverse();
-        historyList.innerHTML = recent.map(item => `
+        document.getElementById('historyList').innerHTML = recent.map(i => `
             <div class="history-item">
-                <span class="word">${escapeHtml(item.de)} = ${escapeHtml(item.es)}</span>
-                <span class="result-${item.result}">${item.result === 'correct' ? '✅' : '❌'}</span>
+                <span>${escapeHtml(i.de)} = ${escapeHtml(i.es)}</span>
+                <span>${i.r === 'correct' ? '✅' : '❌'}</span>
             </div>
         `).join('');
     }
 
-    // ============================================
-    // PRONUNCIACIÓN (iPhone compatible)
-    // ============================================
-    function speakCurrent() {
-        if (!currentWord) {
-            statusMsg.textContent = '⚠️ No hay palabra activa';
-            return;
-        }
-        if (!('speechSynthesis' in window)) {
-            statusMsg.textContent = '❌ Tu navegador no soporta pronunciación';
-            return;
-        }
-
-        // Cancelar cualquier pronunciación previa
-        window.speechSynthesis.cancel();
-
-        const utterance = new SpeechSynthesisUtterance(currentWord.de);
-        utterance.lang = 'de-DE';
-        utterance.rate = 0.85;
-        utterance.pitch = 1;
-        utterance.volume = 1;
-
-        // iOS: forzar voces alemanas si están disponibles
-        const voices = window.speechSynthesis.getVoices();
-        const germanVoice = voices.find(v => v.lang === 'de-DE' || v.lang.startsWith('de'));
-        if (germanVoice) {
-            utterance.voice = germanVoice;
-        }
-
-        window.speechSynthesis.speak(utterance);
-        statusMsg.textContent = `🔊 Pronunciando: ${currentWord.de}`;
-    }
-
-    // Cargar voces al inicio (iOS las carga async)
-    if ('speechSynthesis' in window) {
-        window.speechSynthesis.onvoiceschanged = () => {
-            // Forzar carga
-            window.speechSynthesis.getVoices();
-        };
-        window.speechSynthesis.getVoices();
-    }
-
-    // ============================================
-    // RESET Y EXPORTAR
-    // ============================================
-    function resetGame() {
-        if (wordList.length === 0) {
-            statusMsg.textContent = '⚠️ Carga una lista primero';
-            return;
-        }
-        remaining = shuffle([...wordList]);
-        correct = [];
-        incorrect = [];
-        currentWord = null;
-        answered = false;
-        statusMsg.textContent = '🔄 Juego reiniciado';
-        statusMsg.classList.remove('finished');
-        updateStats();
-        updateHistory();
-        nextWord();
-    }
-
     function exportErrors() {
-        if (incorrect.length === 0) {
-            alert('No hay errores para exportar. ¡Bien hecho!');
+        if (incorrectWords.length === 0) {
+            alert('No hay errores para exportar.');
             return;
         }
-
-        const content = incorrect.map(w => `${w.de}|${w.es}`).join('\n');
+        const content = incorrectWords.map(w => `${w.de}|${w.es}`).join('\n');
         const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = `errores_${new Date().toISOString().slice(0,10)}.txt`;
+        a.download = `errores_wort_erraten_${new Date().toISOString().slice(0,10)}.txt`;
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
         setTimeout(() => URL.revokeObjectURL(url), 1000);
-
-        statusMsg.textContent = `📤 Exportados ${incorrect.length} errores`;
+        document.getElementById('statusMsg').textContent = `📤 Exportados ${incorrectWords.length} errores`;
     }
 
     // ============================================
-    // EVENTOS
+    // VOLVER AL MENÚ
     // ============================================
-    document.getElementById('pasteBtn').addEventListener('click', () => {
-        const text = wordPasteArea.value;
-        if (!text.trim()) {
-            alert('Pega primero la lista de palabras.');
-            return;
-        }
-        loadWords(text);
+    document.getElementById('backBtn').addEventListener('click', () => {
+        gameScreen.style.display = 'none';
+        gameScreen.classList.remove('active');
+        setupScreen.style.display = 'block';
+        document.getElementById('userInput').disabled = false;
     });
 
-    document.getElementById('fileInput').addEventListener('change', (e) => {
-        const file = e.target.files[0];
-        if (!file) return;
-        const reader = new FileReader();
-        reader.onload = (ev) => {
-            wordPasteArea.value = ev.target.result;
-            loadWords(ev.target.result);
-        };
-        reader.readAsText(file, 'UTF-8');
-    });
+    // ============================================
+    // EVENT LISTENERS
+    // ============================================
+    document.getElementById('checkBtn').addEventListener('click', checkAnswer);
+    document.getElementById('hintBtn').addEventListener('click', revealHint);
+    document.getElementById('speakBtn').addEventListener('click', speakWord);
+    document.getElementById('skipBtn').addEventListener('click', skipWord);
+    document.getElementById('exportBtn').addEventListener('click', exportErrors);
 
-    document.querySelectorAll('.mode-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-            document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            mode = btn.getAttribute('data-mode');
-            statusMsg.textContent = `🎯 Modo: ${mode === 'es-to-de' ? 'Español → Alemán' : 'Alemán → Español'}`;
-            // Reiniciar con el nuevo modo
-            if (wordList.length > 0) {
-                resetGame();
-            }
-        });
-    });
-
-    checkBtn.addEventListener('click', checkAnswer);
-    speakBtn.addEventListener('click', speakCurrent);
-    skipBtn.addEventListener('click', skipWord);
-    resetBtn.addEventListener('click', resetGame);
-    exportBtn.addEventListener('click', exportErrors);
-
-    userInput.addEventListener('keydown', (e) => {
+    document.getElementById('userInput').addEventListener('keydown', (e) => {
         if (e.key === 'Enter') {
             e.preventDefault();
             checkAnswer();
         }
     });
+
+    // Cargar voces
+    if ('speechSynthesis' in window) {
+        window.speechSynthesis.onvoiceschanged = () => window.speechSynthesis.getVoices();
+        window.speechSynthesis.getVoices();
+    }
+
+    // Iniciar carga del Sheet
+    loadSheet();
 </script>
 </body>
 </html>
