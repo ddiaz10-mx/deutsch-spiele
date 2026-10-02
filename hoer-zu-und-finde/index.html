@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="de">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <title>🎧 Escucha y Toca - Alemán</title>
+    <title>🎧 Hör zu und finde</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
@@ -25,59 +25,36 @@
             background: linear-gradient(135deg, #059669 0%, #065f46 100%);
         }
 
-        .container { max-width: 700px; margin: 0 auto; }
+        .container { max-width: 900px; margin: 0 auto; }
 
         .card {
             background: rgba(255,255,255,0.97);
             border-radius: 30px;
-            padding: 22px;
+            padding: 25px;
             box-shadow: 0 20px 40px -12px rgba(0,0,0,0.5);
             margin-bottom: 15px;
         }
 
         h1 {
             text-align: center;
-            font-size: 1.6rem;
+            font-size: 1.8rem;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             -webkit-background-clip: text;
             background-clip: text;
             color: transparent;
-            margin-bottom: 4px;
+            margin-bottom: 5px;
         }
 
         .subtitle {
             text-align: center;
             color: #666;
-            font-size: 0.85rem;
-            margin-bottom: 15px;
+            font-size: 0.9rem;
+            margin-bottom: 20px;
         }
-
-        /* Carga */
-        .load-area {
-            background: #f3f4f6;
-            padding: 15px;
-            border-radius: 20px;
-            margin-bottom: 15px;
-        }
-
-        .load-area textarea {
-            width: 100%;
-            padding: 10px;
-            border-radius: 15px;
-            border: 1px solid #ccc;
-            font-family: monospace;
-            font-size: 13px;
-            resize: vertical;
-            min-height: 70px;
-            margin-bottom: 10px;
-            -webkit-appearance: none;
-        }
-
-        .load-buttons { display: flex; gap: 8px; flex-wrap: wrap; }
 
         button {
-            padding: 12px 18px;
-            font-size: 0.9rem;
+            padding: 14px 20px;
+            font-size: 1rem;
             font-weight: bold;
             border: none;
             border-radius: 50px;
@@ -89,57 +66,163 @@
             gap: 6px;
             font-family: inherit;
             -webkit-appearance: none;
-            min-height: 44px;
+            min-height: 48px;
         }
 
         button:active { transform: scale(0.96); }
+        button:disabled { opacity: 0.5; cursor: not-allowed; }
 
         .btn-primary { background: #667eea; color: white; flex: 1; }
-        .btn-file { background: #3b82f6; color: white; flex: 1; text-align: center; cursor: pointer; }
-        .btn-start { background: #10b981; color: white; }
-        .btn-reset { background: #f59e0b; color: white; }
-        .btn-stop { background: #dc2626; color: white; }
-        .btn-close { background: #6b7280; color: white; }
-        .btn-secondary { background: #e5e7eb; color: #374151; }
+        .btn-success { background: #10b981; color: white; }
+        .btn-warning { background: #f59e0b; color: white; }
+        .btn-danger { background: #dc2626; color: white; }
+        .btn-info { background: #3b82f6; color: white; flex: 1; }
 
-        /* Panel de configuración */
-        .config-panel {
-            background: #f3f4f6;
-            padding: 12px;
-            border-radius: 15px;
-            margin-bottom: 15px;
-        }
-
-        .config-row {
+        .mode-selector {
             display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 10px;
-            margin-bottom: 10px;
+            gap: 8px;
+            margin-bottom: 20px;
             flex-wrap: wrap;
         }
 
-        .config-row:last-child { margin-bottom: 0; }
+        .mode-btn {
+            flex: 1;
+            background: #e5e7eb;
+            color: #374151;
+            border: none;
+            border-radius: 18px;
+            font-weight: bold;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            min-width: 100px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            min-height: auto;
+            padding: 14px 10px;
+        }
 
-        .config-label {
+        .mode-btn.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            box-shadow: 0 4px 12px rgba(102,126,234,0.4);
+        }
+
+        .mode-btn .emoji { font-size: 1.5rem; }
+        .mode-btn .label { font-size: 0.75rem; }
+
+        .panel {
+            display: none;
+            background: #f3f4f6;
+            padding: 18px;
+            border-radius: 20px;
+            margin-bottom: 20px;
+        }
+
+        .panel.active { display: block; }
+
+        .form-row { margin-bottom: 12px; }
+
+        .form-row label {
+            display: block;
             font-size: 0.85rem;
             font-weight: bold;
             color: #555;
-            flex-shrink: 0;
+            margin-bottom: 6px;
         }
 
-        .timer-buttons { display: flex; gap: 6px; flex-wrap: wrap; }
+        .form-row select,
+        .form-row textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border-radius: 15px;
+            border: 2px solid #ddd;
+            font-size: 1rem;
+            font-family: inherit;
+            background: white;
+            -webkit-appearance: none;
+            transition: border-color 0.2s;
+        }
+
+        .form-row select:focus,
+        .form-row textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .form-row textarea {
+            font-family: monospace;
+            font-size: 13px;
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .preview-box {
+            background: white;
+            padding: 12px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            max-height: 150px;
+            overflow-y: auto;
+            margin-top: 10px;
+            border: 1px solid #e5e7eb;
+        }
+
+        .preview-box .preview-item {
+            padding: 4px 0;
+            border-bottom: 1px solid #f3f4f6;
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+        }
+
+        .preview-box .preview-item:last-child { border-bottom: none; }
+        .preview-box .de { font-weight: bold; color: #333; }
+        .preview-box .es { color: #667eea; font-style: italic; }
+
+        .badge-count {
+            display: inline-block;
+            background: #10b981;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            margin-top: 8px;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #667eea;
+            font-weight: bold;
+        }
+
+        .error-msg {
+            background: #fee2e2;
+            color: #991b1b;
+            padding: 12px;
+            border-radius: 15px;
+            font-size: 0.85rem;
+            margin-top: 10px;
+        }
+
+        .timer-buttons {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
 
         .timer-btn {
-            padding: 8px 14px;
-            font-size: 0.85rem;
             background: #e5e7eb;
             color: #374151;
+            padding: 8px 14px;
+            font-size: 0.85rem;
+            min-height: auto;
             border-radius: 20px;
-            border: none;
-            cursor: pointer;
-            font-weight: bold;
-            min-height: 36px;
         }
 
         .timer-btn.active {
@@ -147,10 +230,24 @@
             color: white;
         }
 
-        /* Header de juego */
+        /* Perfil strip */
+        .profile-strip {
+            background: #e5e7eb;
+            padding: 10px 15px;
+            border-radius: 15px;
+            font-size: 0.85rem;
+            text-align: center;
+            font-weight: bold;
+            margin-bottom: 12px;
+            color: #374151;
+        }
+
+        /* Juego */
+        .game-zone { display: none; }
+        .game-zone.active { display: block; }
+
         .game-header {
             display: flex;
-            justify-content: space-between;
             gap: 8px;
             margin-bottom: 15px;
             flex-wrap: wrap;
@@ -172,14 +269,12 @@
         .header-badge.streak { background: linear-gradient(135deg, #ef4444 0%, #b91c1c 100%); }
         .header-badge.points { background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); }
 
-        /* Timer */
         .timer-bar {
             height: 14px;
             background: #e5e7eb;
             border-radius: 10px;
             overflow: hidden;
             margin-bottom: 15px;
-            position: relative;
         }
 
         .timer-fill {
@@ -200,7 +295,6 @@
             margin-bottom: 12px;
         }
 
-        /* Botón de escuchar grande */
         .listen-area { text-align: center; margin-bottom: 20px; }
 
         .btn-listen {
@@ -214,13 +308,12 @@
         }
 
         @keyframes pulse-listen {
-            0%, 100% { transform: scale(1); box-shadow: 0 10px 25px -5px rgba(5,150,105,0.5); }
-            50% { transform: scale(1.05); box-shadow: 0 15px 30px -5px rgba(5,150,105,0.7); }
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
         }
 
         .btn-listen:active { animation: none; }
 
-        /* Opciones */
         .options-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -244,44 +337,22 @@
             font-family: inherit;
         }
 
-        .option-btn:hover:not(:disabled) {
-            background: #f0f4ff;
-            transform: translateY(-2px);
-        }
-
-        .option-btn:active:not(:disabled) {
-            transform: scale(0.97);
-        }
+        .option-btn:active:not(:disabled) { transform: scale(0.97); }
 
         .option-btn.correct {
             background: #10b981;
             color: white;
             border-color: #059669;
-            animation: correct-bounce 0.5s;
-        }
-
-        @keyframes correct-bounce {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-            100% { transform: scale(1); }
         }
 
         .option-btn.incorrect {
             background: #ef4444;
             color: white;
             border-color: #b91c1c;
-            animation: shake 0.4s;
-        }
-
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            25% { transform: translateX(-8px); }
-            75% { transform: translateX(8px); }
         }
 
         .option-btn:disabled { cursor: not-allowed; }
 
-        /* Feedback flotante */
         .feedback-float {
             position: fixed;
             top: 30%;
@@ -294,9 +365,7 @@
             opacity: 0;
         }
 
-        .feedback-float.show {
-            animation: float-up 1s ease-out;
-        }
+        .feedback-float.show { animation: float-up 1s ease-out; }
 
         @keyframes float-up {
             0% { opacity: 0; transform: translateX(-50%) translateY(0) scale(0.5); }
@@ -304,13 +373,9 @@
             100% { opacity: 0; transform: translateX(-50%) translateY(-100px) scale(1); }
         }
 
-        .feedback-float.correct { color: #10b981; }
-        .feedback-float.incorrect { color: #ef4444; }
-
-        /* Estado */
-        .status {
+        .status-msg {
             background: #f3f4f6;
-            padding: 12px;
+            padding: 14px;
             border-radius: 15px;
             text-align: center;
             font-size: 0.9rem;
@@ -318,15 +383,15 @@
             margin-bottom: 15px;
         }
 
-        .status.playing { background: #dbeafe; color: #1e40af; font-weight: bold; }
-        .status.finished {
+        .status-msg.success {
             background: linear-gradient(135deg, #10b981 0%, #059669 100%);
             color: white;
             font-weight: bold;
         }
-        .status.error { background: #fee2e2; color: #991b1b; font-weight: bold; }
 
-        /* Pantalla de victoria */
+        .status-msg.error { background: #fee2e2; color: #991b1b; font-weight: bold; }
+
+        /* Victoria */
         .victory-screen {
             display: none;
             background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
@@ -335,7 +400,6 @@
             padding: 25px;
             text-align: center;
             margin-bottom: 15px;
-            box-shadow: 0 15px 30px -8px rgba(245,158,11,0.5);
         }
 
         .victory-screen.show { display: block; animation: victory-in 0.6s; }
@@ -346,24 +410,26 @@
             100% { transform: scale(1); opacity: 1; }
         }
 
-        .victory-screen h2 { font-size: 2rem; margin-bottom: 8px; }
+        .victory-screen h2 { font-size: 1.8rem; margin-bottom: 8px; }
+
         .victory-screen .stats-row {
             display: flex;
             justify-content: space-around;
-            gap: 10px;
+            gap: 8px;
             margin-top: 15px;
             flex-wrap: wrap;
         }
+
         .victory-screen .stat-item {
             background: rgba(255,255,255,0.5);
-            padding: 10px 15px;
+            padding: 10px 12px;
             border-radius: 15px;
-            min-width: 90px;
+            min-width: 80px;
         }
-        .victory-screen .stat-item .lbl { font-size: 0.7rem; font-weight: bold; text-transform: uppercase; }
-        .victory-screen .stat-item .val { font-size: 1.5rem; font-weight: bold; }
 
-        /* Medallas */
+        .victory-screen .stat-item .lbl { font-size: 0.65rem; font-weight: bold; text-transform: uppercase; }
+        .victory-screen .stat-item .val { font-size: 1.4rem; font-weight: bold; }
+
         .medals-row {
             display: flex;
             gap: 6px;
@@ -391,7 +457,6 @@
             100% { transform: scale(1) rotate(0deg); }
         }
 
-        /* Toast de logro */
         .achievement-toast {
             position: fixed;
             top: 20px;
@@ -413,23 +478,34 @@
         .achievement-toast .name { font-size: 1.1rem; margin-top: 3px; }
         .achievement-toast .icon { font-size: 1.8rem; margin-right: 10px; }
 
-        /* Info extra */
-        .info-strip {
+        .back-btn {
             background: #e5e7eb;
-            padding: 10px 15px;
-            border-radius: 15px;
-            font-size: 0.8rem;
-            color: #555;
-            text-align: center;
-            margin-bottom: 12px;
-            font-weight: bold;
+            color: #374151;
+            padding: 8px 16px;
+            font-size: 0.85rem;
+            min-height: 40px;
+            margin-bottom: 15px;
         }
 
-        @media (max-width: 400px) {
+        .medals-panel {
+            margin-top: 15px;
+            padding: 15px;
+            background: #f9fafb;
+            border-radius: 20px;
+            text-align: center;
+        }
+
+        .medals-panel .title {
+            font-weight: bold;
+            color: #555;
+            margin-bottom: 10px;
+            font-size: 0.85rem;
+        }
+
+        @media (max-width: 500px) {
+            h1 { font-size: 1.5rem; }
             .option-btn { font-size: 0.95rem; padding: 18px 8px; min-height: 70px; }
             .btn-listen { font-size: 1.1rem; padding: 18px 30px; }
-            h1 { font-size: 1.4rem; }
-            .header-badge .value { font-size: 1.1rem; }
         }
 
         @supports (padding: max(0px)) {
@@ -444,29 +520,65 @@
 <body>
 <div class="container">
 
-    <div class="card">
-        <h1>🎧 Escucha y Toca</h1>
-        <div class="subtitle">🇩🇪 Listening + Vocabulario</div>
+    <!-- PANTALLA DE CONFIGURACIÓN -->
+    <div class="card" id="setupScreen">
+        <h1>🎧 Hör zu und finde</h1>
+        <div class="subtitle">Escucha la palabra y toca la traducción correcta</div>
 
-        <!-- Info general -->
-        <div class="info-strip" id="profileStrip">
-            🏅 Nivel 1 · ⭐ 0 pts · 🔥 Racha máx: 0
+        <div class="profile-strip" id="profileStrip">🏅 Nivel 1 · ⭐ 0 pts · 🔥 Racha máx: 0</div>
+
+        <div class="mode-selector">
+            <button class="mode-btn active" data-mode="sheet">
+                <span class="emoji">📚</span>
+                <span class="label">Google Sheets</span>
+            </button>
+            <button class="mode-btn" data-mode="paste">
+                <span class="emoji">✏️</span>
+                <span class="label">Pegar lista</span>
+            </button>
+            <button class="mode-btn" data-mode="file">
+                <span class="emoji">📁</span>
+                <span class="label">Subir archivo</span>
+            </button>
         </div>
 
-        <!-- Carga de lista -->
-        <div class="load-area">
-            <textarea id="wordPasteArea" placeholder="Pega tu lista, una por línea:&#10;Haus|casa&#10;Baum|árbol&#10;Wasser|agua&#10;Buch|libro"></textarea>
-            <div class="load-buttons">
-                <button class="btn-primary" id="pasteBtn">📋 Cargar</button>
-                <label class="btn-file" for="fileInput">📁 Archivo</label>
-                <input type="file" id="fileInput" accept=".txt" style="display:none;">
+        <!-- Panel Sheets -->
+        <div class="panel active" id="panelSheet">
+            <div id="sheetLoading" class="loading">⏳ Cargando materias...</div>
+            <div id="sheetForm" style="display:none;">
+                <div class="form-row">
+                    <label>📚 Materia</label>
+                    <select id="selectMateria"></select>
+                </div>
+                <div class="form-row">
+                    <label>📅 Semana</label>
+                    <select id="selectSemana"></select>
+                </div>
+                <div class="form-row">
+                    <label>⏱️ Tiempo por pregunta</label>
+                    <div class="timer-buttons">
+                        <button class="timer-btn" data-time="5">5s</button>
+                        <button class="timer-btn active" data-time="10">10s</button>
+                        <button class="timer-btn" data-time="20">20s</button>
+                        <button class="timer-btn" data-time="0">Sin límite</button>
+                    </div>
+                </div>
+                <div id="sheetPreview"></div>
+                <button class="btn-primary" id="startFromSheet" style="margin-top:12px; width:100%;" disabled>
+                    ▶️ Comenzar juego
+                </button>
             </div>
+            <div id="sheetError" style="display:none;"></div>
         </div>
 
-        <!-- Configuración de tiempo -->
-        <div class="config-panel">
-            <div class="config-row">
-                <span class="config-label">⏱️ Tiempo por pregunta:</span>
+        <!-- Panel Pegar -->
+        <div class="panel" id="panelPaste">
+            <div class="form-row">
+                <label>Pega tus palabras (formato: alemán|español)</label>
+                <textarea id="pasteArea" placeholder="Haus|casa&#10;Baum|árbol&#10;Wasser|agua"></textarea>
+            </div>
+            <div class="form-row">
+                <label>⏱️ Tiempo por pregunta</label>
                 <div class="timer-buttons">
                     <button class="timer-btn" data-time="5">5s</button>
                     <button class="timer-btn active" data-time="10">10s</button>
@@ -474,87 +586,101 @@
                     <button class="timer-btn" data-time="0">Sin límite</button>
                 </div>
             </div>
+            <button class="btn-primary" id="startFromPaste" style="width:100%;">
+                ▶️ Comenzar juego
+            </button>
         </div>
 
-        <div class="status" id="statusMsg">💡 Carga tu lista para comenzar</div>
-
-        <!-- Botón de inicio -->
-        <div style="text-align:center; margin-bottom:15px;">
-            <button class="btn-start" id="startBtn" disabled>▶️ Comenzar juego</button>
-            <button class="btn-reset" id="resetBtn" style="margin-left:8px;">🔄 Reiniciar puntos</button>
-        </div>
-
-        <!-- Zona de juego -->
-        <div id="gameZone" style="display:none;">
-            <div class="game-header">
-                <div class="header-badge">
-                    <div class="label">Pregunta</div>
-                    <div class="value" id="questionCounter">1/10</div>
-                </div>
-                <div class="header-badge streak">
-                    <div class="label">🔥 Racha</div>
-                    <div class="value" id="streakCounter">0</div>
-                </div>
-                <div class="header-badge points">
-                    <div class="label">⭐ Puntos</div>
-                    <div class="value" id="pointsCounter">0</div>
+        <!-- Panel Archivo -->
+        <div class="panel" id="panelFile">
+            <div class="form-row">
+                <label>Selecciona un archivo .txt</label>
+                <input type="file" id="fileInput" accept=".txt" style="width:100%; padding:12px; border-radius:15px; border:2px dashed #ddd; background:white;">
+            </div>
+            <div class="form-row">
+                <label>⏱️ Tiempo por pregunta</label>
+                <div class="timer-buttons">
+                    <button class="timer-btn" data-time="5">5s</button>
+                    <button class="timer-btn active" data-time="10">10s</button>
+                    <button class="timer-btn" data-time="20">20s</button>
+                    <button class="timer-btn" data-time="0">Sin límite</button>
                 </div>
             </div>
-
-            <div class="timer-bar">
-                <div class="timer-fill" id="timerFill" style="width: 100%"></div>
-            </div>
-            <div class="timer-text" id="timerText">10s</div>
-
-            <div class="listen-area">
-                <button class="btn-listen" id="listenBtn">🔊 Escuchar palabra</button>
-            </div>
-
-            <div class="options-grid" id="optionsGrid">
-                <!-- Opciones dinámicas -->
-            </div>
-        </div>
-
-        <!-- Pantalla de victoria -->
-        <div class="victory-screen" id="victoryScreen">
-            <h2>🎉 ¡Ronda completada!</h2>
-            <div id="victorySubtitle" style="font-size:0.95rem; margin-bottom:10px;"></div>
-            <div class="stats-row">
-                <div class="stat-item">
-                    <div class="lbl">Aciertos</div>
-                    <div class="val" id="victoryCorrect">0</div>
-                </div>
-                <div class="stat-item">
-                    <div class="lbl">Errores</div>
-                    <div class="val" id="victoryIncorrect">0</div>
-                </div>
-                <div class="stat-item">
-                    <div class="lbl">Puntos</div>
-                    <div class="val" id="victoryPoints">0</div>
-                </div>
-                <div class="stat-item">
-                    <div class="lbl">Racha</div>
-                    <div class="val" id="victoryStreak">0</div>
-                </div>
-            </div>
-            <div class="medals-row" id="victoryMedals"></div>
-            <div style="margin-top:18px; font-size:0.8rem; opacity:0.8;">
-                📸 Haz captura de esta pantalla
-            </div>
-            <div style="margin-top:12px;">
-                <button class="btn-start" id="playAgainBtn">🔁 Jugar otra vez</button>
-            </div>
+            <button class="btn-primary" id="startFromFile" style="width:100%;" disabled>
+                ▶️ Comenzar juego
+            </button>
         </div>
 
         <!-- Medallas -->
-        <div class="card" style="margin-top:10px;">
-            <div style="font-weight:bold; text-align:center; margin-bottom:8px; color:#555;">
-                🏆 Logros desbloqueados
-            </div>
+        <div class="medals-panel">
+            <div class="title">🏆 Logros desbloqueados</div>
             <div class="medals-row" id="globalMedals"></div>
         </div>
-
     </div>
+
+    <!-- PANTALLA DE JUEGO -->
+    <div class="card game-zone" id="gameScreen">
+        <button class="back-btn" id="backBtn">← Volver al menú</button>
+
+        <div class="game-header">
+            <div class="header-badge">
+                <div class="label">Pregunta</div>
+                <div class="value" id="questionCounter">1/10</div>
+            </div>
+            <div class="header-badge streak">
+                <div class="label">🔥 Racha</div>
+                <div class="value" id="streakCounter">0</div>
+            </div>
+            <div class="header-badge points">
+                <div class="label">⭐ Puntos</div>
+                <div class="value" id="pointsCounter">0</div>
+            </div>
+        </div>
+
+        <div class="timer-bar">
+            <div class="timer-fill" id="timerFill" style="width: 100%"></div>
+        </div>
+        <div class="timer-text" id="timerText">10s</div>
+
+        <div class="listen-area">
+            <button class="btn-listen" id="listenBtn">🔊 Escuchar palabra</button>
+        </div>
+
+        <div class="options-grid" id="optionsGrid"></div>
+
+        <div class="status-msg" id="statusMsg">Escucha y toca la respuesta correcta</div>
+    </div>
+
+    <!-- PANTALLA DE VICTORIA -->
+    <div class="card victory-screen" id="victoryScreen">
+        <h2>🎉 ¡Ronda completada!</h2>
+        <div id="victorySubtitle" style="font-size:0.95rem; margin-bottom:10px;"></div>
+        <div class="stats-row">
+            <div class="stat-item">
+                <div class="lbl">Aciertos</div>
+                <div class="val" id="victoryCorrect">0</div>
+            </div>
+            <div class="stat-item">
+                <div class="lbl">Errores</div>
+                <div class="val" id="victoryIncorrect">0</div>
+            </div>
+            <div class="stat-item">
+                <div class="lbl">Puntos</div>
+                <div class="val" id="victoryPoints">0</div>
+            </div>
+            <div class="stat-item">
+                <div class="lbl">Racha</div>
+                <div class="val" id="victoryStreak">0</div>
+            </div>
+        </div>
+        <div class="medals-row" id="victoryMedals"></div>
+        <div style="margin-top:18px; font-size:0.8rem; opacity:0.8;">📸 Haz captura de esta pantalla</div>
+        <div style="margin-top:12px; display:flex; gap:10px; justify-content:center;">
+            <button class="btn-success" id="playAgainBtn">🔁 Otra vez</button>
+            <button class="btn-warning" id="exportErrorsBtn">📤 Errores</button>
+        </div>
+    </div>
+
 </div>
 
 <!-- Feedback flotante -->
@@ -573,28 +699,31 @@
 
 <script>
     // ============================================
-    // LOGROS (medallas)
+    // CONFIGURACIÓN
+    // ============================================
+    const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSlW8tCq8CTvMJQ4PsTPZlLJy_qwBnKX-I1IykFuq8jJMPXFXI9wL0Q-iQRlmh8kIcKVKIo0T_O6Q6g/pub?output=csv';
+    const STORAGE_KEY = 'hoerZuUndFindeStats_v1';
+    const MIN_WORDS_REQUIRED = 4;
+
+    // ============================================
+    // LOGROS
     // ============================================
     const ACHIEVEMENTS = [
-        { id: 'first_game', icon: '🎯', name: 'Primer juego', desc: 'Completa tu primera ronda', check: (s) => s.gamesPlayed >= 1 },
-        { id: 'streak_3', icon: '🔥', name: 'En racha', desc: '3 aciertos seguidos', check: (s) => s.maxStreak >= 3 },
-        { id: 'streak_5', icon: '⚡', name: 'Imparable', desc: '5 aciertos seguidos', check: (s) => s.maxStreak >= 5 },
-        { id: 'streak_10', icon: '💥', name: 'Demoledor', desc: '10 aciertos seguidos', check: (s) => s.maxStreak >= 10 },
-        { id: 'perfect_round', icon: '💯', name: 'Ronda perfecta', desc: 'Sin errores en una ronda', check: (s) => s.perfectRounds >= 1 },
-        { id: 'perfect_3', icon: '👑', name: 'Rey del listening', desc: '3 rondas perfectas', check: (s) => s.perfectRounds >= 3 },
-        { id: 'points_100', icon: '⭐', name: '100 puntos', desc: 'Acumula 100 puntos', check: (s) => s.totalPoints >= 100 },
-        { id: 'points_500', icon: '🌟', name: '500 puntos', desc: 'Acumula 500 puntos', check: (s) => s.totalPoints >= 500 },
-        { id: 'points_1000', icon: '💎', name: '1000 puntos', desc: 'Acumula 1000 puntos', check: (s) => s.totalPoints >= 1000 },
-        { id: 'speed_demon', icon: '🚀', name: 'Velocista', desc: '10 respuestas en < 2s', check: (s) => s.fastAnswers >= 10 },
-        { id: 'listener', icon: '🎧', name: 'Buen oído', desc: '50 palabras escuchadas', check: (s) => s.totalListens >= 50 },
-        { id: 'veteran', icon: '🎖️', name: 'Veterano', desc: '10 rondas jugadas', check: (s) => s.gamesPlayed >= 10 }
+        { id: 'first_game', icon: '🎯', name: 'Primer juego', check: (s) => s.gamesPlayed >= 1 },
+        { id: 'streak_3', icon: '🔥', name: 'En racha', check: (s) => s.maxStreak >= 3 },
+        { id: 'streak_5', icon: '⚡', name: 'Imparable', check: (s) => s.maxStreak >= 5 },
+        { id: 'streak_10', icon: '💥', name: 'Demoledor', check: (s) => s.maxStreak >= 10 },
+        { id: 'perfect_round', icon: '💯', name: 'Ronda perfecta', check: (s) => s.perfectRounds >= 1 },
+        { id: 'perfect_3', icon: '👑', name: 'Rey del listening', check: (s) => s.perfectRounds >= 3 },
+        { id: 'points_100', icon: '⭐', name: '100 puntos', check: (s) => s.totalPoints >= 100 },
+        { id: 'points_500', icon: '🌟', name: '500 puntos', check: (s) => s.totalPoints >= 500 },
+        { id: 'points_1000', icon: '💎', name: '1000 puntos', check: (s) => s.totalPoints >= 1000 },
+        { id: 'veteran', icon: '🎖️', name: 'Veterano', check: (s) => s.gamesPlayed >= 10 }
     ];
 
     // ============================================
-    // ESTADO PERSISTENTE (localStorage)
+    // ESTADO PERSISTENTE
     // ============================================
-    const STORAGE_KEY = 'escuchaYTocaStats_v1';
-
     function loadStats() {
         try {
             const raw = localStorage.getItem(STORAGE_KEY);
@@ -605,8 +734,6 @@
             gamesPlayed: 0,
             perfectRounds: 0,
             maxStreak: 0,
-            fastAnswers: 0,
-            totalListens: 0,
             unlockedAchievements: []
         };
     }
@@ -620,11 +747,12 @@
     let userStats = loadStats();
 
     // ============================================
-    // ESTADO DE LA RONDA ACTUAL
+    // ESTADO DEL JUEGO
     // ============================================
-    let wordList = [];           // [{de, es}]
-    let roundQueue = [];         // palabras por preguntar
-    let currentQuestion = null;  // {de, es, options: [...]}
+    let allSheetData = [];
+    let currentWordList = [];
+    let roundQueue = [];
+    let currentQuestion = null;
     let currentStreak = 0;
     let currentPoints = 0;
     let currentCorrect = 0;
@@ -633,25 +761,24 @@
     let totalQuestions = 0;
     let timerInterval = null;
     let timeRemaining = 0;
-    let timerSeconds = 10;       // configurable
+    let timerSeconds = 10;
     let gameActive = false;
     let questionAnswered = false;
+    let fileWordsReady = [];
 
-    // Elementos DOM
-    const wordPasteArea = document.getElementById('wordPasteArea');
-    const statusMsg = document.getElementById('statusMsg');
-    const startBtn = document.getElementById('startBtn');
-    const resetBtn = document.getElementById('resetBtn');
-    const gameZone = document.getElementById('gameZone');
-    const optionsGrid = document.getElementById('optionsGrid');
-    const listenBtn = document.getElementById('listenBtn');
-    const timerFill = document.getElementById('timerFill');
-    const timerText = document.getElementById('timerText');
-    const questionCounter = document.getElementById('questionCounter');
-    const streakCounter = document.getElementById('streakCounter');
-    const pointsCounter = document.getElementById('pointsCounter');
-    const feedbackFloat = document.getElementById('feedbackFloat');
+    // DOM
+    const setupScreen = document.getElementById('setupScreen');
+    const gameScreen = document.getElementById('gameScreen');
     const victoryScreen = document.getElementById('victoryScreen');
+    const selectMateria = document.getElementById('selectMateria');
+    const selectSemana = document.getElementById('selectSemana');
+    const sheetPreview = document.getElementById('sheetPreview');
+    const startFromSheet = document.getElementById('startFromSheet');
+    const sheetLoading = document.getElementById('sheetLoading');
+    const sheetForm = document.getElementById('sheetForm');
+    const sheetError = document.getElementById('sheetError');
+    const optionsGrid = document.getElementById('optionsGrid');
+    const feedbackFloat = document.getElementById('feedbackFloat');
     const profileStrip = document.getElementById('profileStrip');
     const globalMedals = document.getElementById('globalMedals');
     const achievementToast = document.getElementById('achievementToast');
@@ -675,94 +802,265 @@
     }
 
     // ============================================
-    // CARGAR LISTA
+    // PARSER CSV
     // ============================================
-    function parseLine(line) {
-        const trimmed = line.trim();
-        if (!trimmed) return null;
-        let parts;
-        if (trimmed.includes('|')) parts = trimmed.split('|');
-        else if (trimmed.includes('\t')) parts = trimmed.split('\t');
-        else if (trimmed.includes(' - ')) parts = trimmed.split(' - ');
-        else return null;
-        const de = (parts[0] || '').trim();
-        const es = (parts[1] || '').trim();
-        if (!de || !es) return null;
-        return { de, es };
+    function parseCSVRow(row) {
+        const result = [];
+        let current = '';
+        let inQuotes = false;
+        for (let i = 0; i < row.length; i++) {
+            const char = row[i];
+            if (char === '"') inQuotes = !inQuotes;
+            else if (char === ',' && !inQuotes) { result.push(current.trim()); current = ''; }
+            else current += char;
+        }
+        result.push(current.trim());
+        return result;
     }
 
-    function loadWords(text) {
-        const lines = text.split(/\r?\n/);
-        const parsed = lines.map(parseLine).filter(w => w);
-        const seen = new Set();
-        const unique = [];
-        for (const w of parsed) {
-            const key = w.de.toLowerCase();
-            if (!seen.has(key)) {
-                seen.add(key);
-                unique.push(w);
+    function parseCSV(csvText) {
+        const lines = csvText.replace(/\r\n/g, '\n').split('\n').filter(l => l.trim());
+        if (lines.length < 2) return [];
+        const header = parseCSVRow(lines[0]).map(h => h.trim());
+        const idxMateria = header.indexOf('Materia');
+        const idxSemana = header.indexOf('Semana');
+        const idxAleman = header.indexOf('Aleman');
+        const idxEspanol = header.indexOf('Espanol');
+        if (idxMateria === -1 || idxSemana === -1 || idxAleman === -1 || idxEspanol === -1) return [];
+
+        const data = [];
+        for (let i = 1; i < lines.length; i++) {
+            const row = parseCSVRow(lines[i]);
+            if (row.length >= 4 && row[idxAleman]) {
+                data.push({
+                    materia: row[idxMateria] || '',
+                    semana: row[idxSemana] || '',
+                    de: row[idxAleman] || '',
+                    es: row[idxEspanol] || ''
+                });
             }
         }
-        if (unique.length < 4) {
-            alert('Necesitas al menos 4 pares (alemán|español) para generar opciones.');
+        return data;
+    }
+
+    // ============================================
+    // CARGAR SHEET
+    // ============================================
+    async function loadSheet() {
+        try {
+            const res = await fetch(SHEET_URL);
+            if (!res.ok) throw new Error('HTTP ' + res.status);
+            const csv = await res.text();
+            allSheetData = parseCSV(csv);
+            if (allSheetData.length === 0) throw new Error('No se encontraron palabras.');
+
+            const materias = [...new Set(allSheetData.map(d => d.materia))].filter(m => m).sort();
+            selectMateria.innerHTML = '<option value="">-- Elige materia --</option>' +
+                materias.map(m => `<option value="${escapeHtml(m)}">${escapeHtml(m)}</option>`).join('');
+
+            sheetLoading.style.display = 'none';
+            sheetForm.style.display = 'block';
+            sheetError.style.display = 'none';
+        } catch (err) {
+            console.error(err);
+            sheetLoading.style.display = 'none';
+            sheetError.style.display = 'block';
+            sheetError.innerHTML = `<div class="error-msg">❌ No se pudo cargar el Sheet: ${escapeHtml(err.message)}<br><br>Usa "Pegar lista" mientras tanto.</div>`;
+        }
+    }
+
+    // ============================================
+    // EVENTOS SHEET
+    // ============================================
+    selectMateria.addEventListener('change', () => {
+        const materia = selectMateria.value;
+        if (!materia) {
+            selectSemana.innerHTML = '<option value="">-- Elige semana --</option>';
+            sheetPreview.innerHTML = '';
+            startFromSheet.disabled = true;
             return;
         }
-        wordList = unique;
-        statusMsg.textContent = `✅ ${wordList.length} pares cargados. Presiona "Comenzar juego".`;
-        statusMsg.className = 'status';
-        startBtn.disabled = false;
-        gameZone.style.display = 'none';
-        victoryScreen.classList.remove('show');
+        const semanas = [...new Set(allSheetData.filter(d => d.materia === materia).map(d => d.semana))].filter(s => s);
+        semanas.sort((a, b) => {
+            const na = parseInt(a, 10), nb = parseInt(b, 10);
+            if (!isNaN(na) && !isNaN(nb)) return na - nb;
+            if (!isNaN(na)) return -1;
+            if (!isNaN(nb)) return 1;
+            return a.localeCompare(b);
+        });
+        selectSemana.innerHTML = '<option value="">-- Elige semana --</option>' +
+            semanas.map(s => `<option value="${escapeHtml(s)}">${escapeHtml(s)}</option>`).join('');
+        sheetPreview.innerHTML = '';
+        startFromSheet.disabled = true;
+    });
+
+    selectSemana.addEventListener('change', () => {
+        const materia = selectMateria.value;
+        const semana = selectSemana.value;
+        if (!materia || !semana) {
+            sheetPreview.innerHTML = '';
+            startFromSheet.disabled = true;
+            return;
+        }
+        const filtered = allSheetData.filter(d => d.materia === materia && d.semana === semana);
+        if (filtered.length < MIN_WORDS_REQUIRED) {
+            sheetPreview.innerHTML = `<div class="error-msg">⚠️ Necesitas al menos ${MIN_WORDS_REQUIRED} palabras (tienes ${filtered.length}).</div>`;
+            startFromSheet.disabled = true;
+            return;
+        }
+        sheetPreview.innerHTML = `
+            <div class="badge-count">✅ ${filtered.length} palabras</div>
+            <div class="preview-box">
+                ${filtered.map(d => `
+                    <div class="preview-item">
+                        <span class="de">${escapeHtml(d.de)}</span>
+                        <span class="es">${escapeHtml(d.es)}</span>
+                    </div>
+                `).join('')}
+            </div>
+        `;
+        startFromSheet.disabled = false;
+    });
+
+    startFromSheet.addEventListener('click', () => {
+        const materia = selectMateria.value;
+        const semana = selectSemana.value;
+        const filtered = allSheetData.filter(d => d.materia === materia && d.semana === semana);
+        startGame(filtered.map(d => ({ de: d.de, es: d.es })));
+    });
+
+    // ============================================
+    // MODO SELECTOR
+    // ============================================
+    document.querySelectorAll('.mode-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            const mode = btn.getAttribute('data-mode');
+            document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+            document.getElementById('panel' + mode.charAt(0).toUpperCase() + mode.slice(1)).classList.add('active');
+        });
+    });
+
+    // ============================================
+    // TIMER SELECTOR
+    // ============================================
+    document.querySelectorAll('.timer-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const parent = btn.closest('.timer-buttons');
+            parent.querySelectorAll('.timer-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            timerSeconds = parseInt(btn.getAttribute('data-time'), 10);
+        });
+    });
+
+    // ============================================
+    // PARSER TEXTO
+    // ============================================
+    function parsePastedText(text) {
+        const lines = text.split(/\r?\n/);
+        const words = [];
+        for (const line of lines) {
+            const trimmed = line.trim();
+            if (!trimmed) continue;
+            let parts;
+            if (trimmed.includes('|')) parts = trimmed.split('|');
+            else if (trimmed.includes('\t')) parts = trimmed.split('\t');
+            else if (trimmed.includes(' - ')) parts = trimmed.split(' - ');
+            else continue;
+            const de = (parts[0] || '').trim();
+            const es = (parts[1] || '').trim();
+            if (de && es) words.push({ de, es });
+        }
+        return words;
     }
+
+    document.getElementById('startFromPaste').addEventListener('click', () => {
+        const text = document.getElementById('pasteArea').value;
+        if (!text.trim()) { alert('Pega primero tus palabras.'); return; }
+        const words = parsePastedText(text);
+        if (words.length < MIN_WORDS_REQUIRED) {
+            alert(`Necesitas al menos ${MIN_WORDS_REQUIRED} palabras para generar opciones.`);
+            return;
+        }
+        startGame(words);
+    });
+
+    document.getElementById('fileInput').addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+            fileWordsReady = parsePastedText(ev.target.result);
+            const btn = document.getElementById('startFromFile');
+            if (fileWordsReady.length >= MIN_WORDS_REQUIRED) {
+                btn.disabled = false;
+                btn.textContent = `▶️ Comenzar (${fileWordsReady.length} palabras)`;
+            } else {
+                btn.disabled = true;
+                btn.textContent = `⚠️ Necesitas al menos ${MIN_WORDS_REQUIRED} palabras`;
+            }
+        };
+        reader.readAsText(file, 'UTF-8');
+    });
+
+    document.getElementById('startFromFile').addEventListener('click', () => {
+        if (fileWordsReady.length >= MIN_WORDS_REQUIRED) startGame(fileWordsReady);
+    });
 
     // ============================================
     // INICIAR JUEGO
     // ============================================
-    function startGame() {
-        if (wordList.length < 4) {
-            alert('Necesitas al menos 4 palabras.');
+    function startGame(words) {
+        if (words.length < MIN_WORDS_REQUIRED) {
+            alert(`Necesitas al menos ${MIN_WORDS_REQUIRED} palabras.`);
             return;
         }
-        gameActive = true;
-        roundQueue = shuffle(wordList);
+        currentWordList = [...words];
+        roundQueue = shuffle(wordListUnique(words));
         totalQuestions = roundQueue.length;
         questionIndex = 0;
         currentStreak = 0;
         currentPoints = 0;
         currentCorrect = 0;
         currentIncorrect = 0;
+        gameActive = true;
 
-        gameZone.style.display = 'block';
+        setupScreen.style.display = 'none';
         victoryScreen.classList.remove('show');
+        gameScreen.style.display = 'block';
+        gameScreen.classList.add('active');
         document.body.classList.remove('victory-mode', 'streak-mode');
-        startBtn.disabled = true;
 
         updateHeader();
         nextQuestion();
     }
 
-    function nextQuestion() {
-        if (roundQueue.length === 0) {
-            endRound();
-            return;
+    function wordListUnique(words) {
+        const seen = new Set();
+        const result = [];
+        for (const w of words) {
+            const key = w.de.toLowerCase();
+            if (!seen.has(key)) { seen.add(key); result.push(w); }
         }
+        return result;
+    }
+
+    function nextQuestion() {
+        if (roundQueue.length === 0) { endRound(); return; }
 
         questionAnswered = false;
         const correct = roundQueue.shift();
         questionIndex++;
 
-        // Generar 3 distractores aleatorios (que no sean la correcta)
-        const others = wordList.filter(w => w.es !== correct.es);
+        const others = wordListUnique(currentWordList).filter(w => w.es !== correct.es);
         const shuffledOthers = shuffle(others);
         const distractors = shuffledOthers.slice(0, Math.min(3, shuffledOthers.length));
 
-        // Opciones: correcta + distractores
         const options = shuffle([correct, ...distractors]);
-
         currentQuestion = { correct, options };
 
-        // Renderizar
-        optionsGrid.innerHTML = options.map((opt, i) => `
+        optionsGrid.innerHTML = options.map(opt => `
             <button class="option-btn" data-es="${escapeHtml(opt.es)}">
                 ${escapeHtml(opt.es)}
             </button>
@@ -774,7 +1072,6 @@
 
         updateHeader();
 
-        // Auto pronunciar y arrancar timer
         setTimeout(() => {
             speakWord(correct.de);
             startTimer();
@@ -790,7 +1087,6 @@
         const correctEs = currentQuestion.correct.es;
         const isCorrect = selected === correctEs;
 
-        // Deshabilitar todas
         optionsGrid.querySelectorAll('.option-btn').forEach(b => b.disabled = true);
 
         if (isCorrect) {
@@ -798,29 +1094,21 @@
             currentStreak++;
             currentCorrect++;
 
-            // Calcular puntos
             const timeBonus = timeRemaining > 0 ? Math.floor(timeRemaining) : 0;
             const basePoints = 10 + timeBonus;
             const streakMultiplier = currentStreak >= 10 ? 3 : currentStreak >= 5 ? 2 : 1;
             const earned = basePoints * streakMultiplier;
             currentPoints += earned;
 
-            // Rastrear velocidad
-            if (timerSeconds > 0 && timerSeconds - timeRemaining <= 2) {
-                userStats.fastAnswers = (userStats.fastAnswers || 0) + 1;
-            }
-
             showFeedbackFloat('✅ +' + earned, 'correct');
             playSuccessSound();
 
-            // Modo racha visual
             if (currentStreak >= 3) {
                 document.body.classList.add('streak-mode');
                 setTimeout(() => document.body.classList.remove('streak-mode'), 1200);
             }
         } else {
             btn.classList.add('incorrect');
-            // Marcar la correcta en verde
             optionsGrid.querySelectorAll('.option-btn').forEach(b => {
                 if (b.getAttribute('data-es') === correctEs) b.classList.add('correct');
             });
@@ -830,45 +1118,28 @@
             playErrorSound();
         }
 
-        // Actualizar stats globales
-        userStats.totalPoints += isCorrect ? currentPoints - (currentPoints - earnedPoints(isCorrect, timeRemaining, currentStreak)) : 0;
-        // Simplificamos: sumar directamente lo ganado
-        if (isCorrect) {
-            userStats.totalPoints = (userStats.totalPoints || 0);
-        }
         userStats.maxStreak = Math.max(userStats.maxStreak || 0, currentStreak);
-
         saveStats();
         checkAchievements();
         updateProfileStrip();
         updateHeader();
 
-        // Siguiente pregunta
-        setTimeout(() => {
-            if (gameActive) nextQuestion();
-        }, 1500);
-    }
-
-    function earnedPoints(isCorrect, timeRemaining, streak) {
-        if (!isCorrect) return 0;
-        const timeBonus = timeRemaining > 0 ? Math.floor(timeRemaining) : 0;
-        const base = 10 + timeBonus;
-        const mult = streak >= 10 ? 3 : streak >= 5 ? 2 : 1;
-        return base * mult;
+        setTimeout(() => { if (gameActive) nextQuestion(); }, 1500);
     }
 
     function showFeedbackFloat(text, type) {
         feedbackFloat.textContent = text;
         feedbackFloat.className = 'feedback-float ' + type;
+        feedbackFloat.style.color = type === 'correct' ? '#10b981' : '#ef4444';
         void feedbackFloat.offsetWidth;
         feedbackFloat.classList.add('show');
         setTimeout(() => feedbackFloat.classList.remove('show'), 1000);
     }
 
     function updateHeader() {
-        questionCounter.textContent = `${questionIndex}/${totalQuestions}`;
-        streakCounter.textContent = currentStreak;
-        pointsCounter.textContent = currentPoints;
+        document.getElementById('questionCounter').textContent = `${questionIndex}/${totalQuestions}`;
+        document.getElementById('streakCounter').textContent = currentStreak;
+        document.getElementById('pointsCounter').textContent = currentPoints;
     }
 
     function updateProfileStrip() {
@@ -881,6 +1152,9 @@
     // ============================================
     function startTimer() {
         stopTimer();
+        const timerFill = document.getElementById('timerFill');
+        const timerText = document.getElementById('timerText');
+
         if (timerSeconds === 0) {
             timerFill.style.width = '100%';
             timerFill.className = 'timer-fill';
@@ -896,20 +1170,16 @@
                 timeRemaining = 0;
                 updateTimerDisplay();
                 stopTimer();
-                // Tiempo agotado: marcar como incorrecto
                 if (!questionAnswered) {
                     questionAnswered = true;
                     currentStreak = 0;
                     currentIncorrect++;
                     optionsGrid.querySelectorAll('.option-btn').forEach(b => {
                         b.disabled = true;
-                        if (b.getAttribute('data-es') === currentQuestion.correct.es) {
-                            b.classList.add('correct');
-                        }
+                        if (b.getAttribute('data-es') === currentQuestion.correct.es) b.classList.add('correct');
                     });
                     showFeedbackFloat('⏰', 'incorrect');
                     playErrorSound();
-                    userStats.maxStreak = Math.max(userStats.maxStreak || 0, currentStreak);
                     saveStats();
                     updateHeader();
                     setTimeout(() => { if (gameActive) nextQuestion(); }, 1500);
@@ -921,19 +1191,17 @@
     }
 
     function stopTimer() {
-        if (timerInterval) {
-            clearInterval(timerInterval);
-            timerInterval = null;
-        }
+        if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
     }
 
     function updateTimerDisplay() {
+        const timerFill = document.getElementById('timerFill');
+        const timerText = document.getElementById('timerText');
         const pct = (timeRemaining / timerSeconds) * 100;
         timerFill.style.width = pct + '%';
         timerFill.className = 'timer-fill';
         if (pct < 25) timerFill.classList.add('danger');
         else if (pct < 50) timerFill.classList.add('warning');
-
         timerText.textContent = Math.ceil(timeRemaining) + 's';
     }
 
@@ -950,13 +1218,9 @@
         const german = voices.find(v => v.lang === 'de-DE' || v.lang.startsWith('de'));
         if (german) utt.voice = german;
         window.speechSynthesis.speak(utt);
-
-        userStats.totalListens = (userStats.totalListens || 0) + 1;
-        saveStats();
-        checkAchievements();
     }
 
-    listenBtn.addEventListener('click', () => {
+    document.getElementById('listenBtn').addEventListener('click', () => {
         if (currentQuestion) speakWord(currentQuestion.correct.de);
     });
 
@@ -1007,12 +1271,10 @@
     // ============================================
     function checkAchievements() {
         ACHIEVEMENTS.forEach(a => {
-            if (!userStats.unlockedAchievements.includes(a.id)) {
-                if (a.check(userStats)) {
-                    userStats.unlockedAchievements.push(a.id);
-                    saveStats();
-                    showAchievementToast(a);
-                }
+            if (!userStats.unlockedAchievements.includes(a.id) && a.check(userStats)) {
+                userStats.unlockedAchievements.push(a.id);
+                saveStats();
+                showAchievementToast(a);
             }
         });
         renderMedals();
@@ -1028,7 +1290,7 @@
     function renderMedals() {
         const html = ACHIEVEMENTS.map(a => {
             const unlocked = userStats.unlockedAchievements.includes(a.id);
-            return `<span class="medal ${unlocked ? 'unlocked' : ''}" title="${a.name}: ${a.desc}">${a.icon}</span>`;
+            return `<span class="medal ${unlocked ? 'unlocked' : ''}" title="${a.name}">${a.icon}</span>`;
         }).join('');
         globalMedals.innerHTML = html;
     }
@@ -1039,12 +1301,11 @@
     function endRound() {
         gameActive = false;
         stopTimer();
-        gameZone.style.display = 'none';
+        gameScreen.style.display = 'none';
+        gameScreen.classList.remove('active');
 
         const isPerfect = currentIncorrect === 0;
-        if (isPerfect) {
-            userStats.perfectRounds = (userStats.perfectRounds || 0) + 1;
-        }
+        if (isPerfect) userStats.perfectRounds = (userStats.perfectRounds || 0) + 1;
         userStats.gamesPlayed = (userStats.gamesPlayed || 0) + 1;
         userStats.totalPoints = (userStats.totalPoints || 0) + currentPoints;
         userStats.maxStreak = Math.max(userStats.maxStreak || 0, currentStreak);
@@ -1053,18 +1314,15 @@
         checkAchievements();
         updateProfileStrip();
 
-        // Pantalla de victoria
         document.getElementById('victoryCorrect').textContent = currentCorrect;
         document.getElementById('victoryIncorrect').textContent = currentIncorrect;
         document.getElementById('victoryPoints').textContent = currentPoints;
         document.getElementById('victoryStreak').textContent = currentStreak;
 
-        const subtitle = isPerfect
+        document.getElementById('victorySubtitle').textContent = isPerfect
             ? '💯 ¡Ronda perfecta! Sin errores.'
             : `🎯 Acertaste ${currentCorrect} de ${totalQuestions}`;
-        document.getElementById('victorySubtitle').textContent = subtitle;
 
-        // Medallas de esta ronda
         const medalsHtml = ACHIEVEMENTS.map(a => {
             const unlocked = userStats.unlockedAchievements.includes(a.id);
             return `<span class="medal ${unlocked ? 'unlocked' : ''}">${a.icon}</span>`;
@@ -1072,76 +1330,81 @@
         document.getElementById('victoryMedals').innerHTML = medalsHtml;
 
         victoryScreen.classList.add('show');
+        setupScreen.style.display = 'block';
         document.body.classList.add('victory-mode');
         document.body.classList.remove('streak-mode');
 
-        // Sonido de victoria
         if (isPerfect) {
             setTimeout(() => playSuccessSound(), 100);
             setTimeout(() => playSuccessSound(), 300);
             setTimeout(() => playSuccessSound(), 500);
         }
-
-        startBtn.disabled = false;
     }
 
     // ============================================
     // EVENTOS
     // ============================================
-    document.getElementById('pasteBtn').addEventListener('click', () => {
-        const text = wordPasteArea.value;
-        if (!text.trim()) {
-            alert('Pega primero la lista de palabras.');
+    document.getElementById('backBtn').addEventListener('click', () => {
+        gameActive = false;
+        stopTimer();
+        gameScreen.style.display = 'none';
+        gameScreen.classList.remove('active');
+        setupScreen.style.display = 'block';
+    });
+
+    document.getElementById('playAgainBtn').addEventListener('click', () => {
+        victoryScreen.classList.remove('show');
+        document.body.classList.remove('victory-mode');
+        startGame(wordListUnique(currentWordList));
+    });
+
+    document.getElementById('exportErrorsBtn').addEventListener('click', () => {
+        if (currentIncorrect === 0) {
+            alert('No hay errores para exportar.');
             return;
         }
-        loadWords(text);
+        const errores = [];
+        // Reconstruir lista de errores del historial local de la ronda
+        // Nota: guardamos temporalmente en el array global
+        if (window._roundErrors && window._roundErrors.length > 0) {
+            window._roundErrors.forEach(e => errores.push(`${e.de}|${e.es}`));
+        }
+        if (errores.length === 0) {
+            alert('No hay errores registrados.');
+            return;
+        }
+        const content = errores.join('\n');
+        const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `errores_hoer_zu_${new Date().toISOString().slice(0,10)}.txt`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        setTimeout(() => URL.revokeObjectURL(url), 1000);
     });
 
-    document.getElementById('fileInput').addEventListener('change', (e) => {
-        const file = e.target.files[0];
-        if (!file) return;
-        const reader = new FileReader();
-        reader.onload = (ev) => {
-            wordPasteArea.value = ev.target.result;
-            loadWords(ev.target.result);
-        };
-        reader.readAsText(file, 'UTF-8');
-    });
+    // Registrar errores durante la ronda
+    const originalHandleAnswer = handleAnswer;
+    handleAnswer = function(btn) {
+        if (questionAnswered || !gameActive) return;
+        const selected = btn.getAttribute('data-es');
+        const isCorrect = selected === currentQuestion.correct.es;
+        if (!isCorrect) {
+            if (!window._roundErrors) window._roundErrors = [];
+            window._roundErrors.push(currentQuestion.correct);
+        }
+        return originalHandleAnswer.call(this, btn);
+    };
 
-    document.querySelectorAll('.timer-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-            document.querySelectorAll('.timer-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            timerSeconds = parseInt(btn.getAttribute('data-time'), 10);
-            statusMsg.textContent = `⏱️ Tiempo configurado: ${timerSeconds === 0 ? 'Sin límite' : timerSeconds + 's'}`;
-            statusMsg.className = 'status';
-        });
-    });
-
-    startBtn.addEventListener('click', startGame);
-    document.getElementById('playAgainBtn').addEventListener('click', startGame);
-
-    resetBtn.addEventListener('click', () => {
-        if (!confirm('¿Borrar todas las estadísticas y logros?')) return;
-        userStats = {
-            totalPoints: 0,
-            gamesPlayed: 0,
-            perfectRounds: 0,
-            maxStreak: 0,
-            fastAnswers: 0,
-            totalListens: 0,
-            unlockedAchievements: []
-        };
-        saveStats();
-        renderMedals();
-        updateProfileStrip();
-        statusMsg.textContent = '🔄 Estadísticas reiniciadas';
-        statusMsg.className = 'status';
-    });
-
-    // Inicializar
+    // ============================================
+    // INICIALIZAR
+    // ============================================
+    window._roundErrors = [];
     renderMedals();
     updateProfileStrip();
+    loadSheet();
 </script>
 </body>
 </html>
