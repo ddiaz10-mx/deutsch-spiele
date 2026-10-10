@@ -1,0 +1,823 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <title>🦴 Skelett beschriften</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+        body {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            min-height: 100vh;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            padding: 15px;
+            -webkit-text-size-adjust: 100%;
+        }
+
+        .container { max-width: 900px; margin: 0 auto; }
+
+        .card {
+            background: rgba(255,255,255,0.97);
+            border-radius: 30px;
+            padding: 20px;
+            box-shadow: 0 20px 40px -12px rgba(0,0,0,0.5);
+            margin-bottom: 15px;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 1.7rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-bottom: 4px;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            font-size: 0.85rem;
+            margin-bottom: 15px;
+        }
+
+        button {
+            padding: 12px 18px;
+            font-size: 0.95rem;
+            font-weight: bold;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: transform 0.15s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            font-family: inherit;
+            -webkit-appearance: none;
+            min-height: 46px;
+        }
+
+        button:active { transform: scale(0.96); }
+        button:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        .btn-primary { background: #667eea; color: white; }
+        .btn-success { background: #10b981; color: white; }
+        .btn-warning { background: #f59e0b; color: white; }
+        .btn-danger { background: #dc2626; color: white; }
+        .btn-info { background: #3b82f6; color: white; }
+        .btn-small-speak { background: #059669; color: white; padding: 6px 10px; font-size: 0.8rem; min-height: auto; border-radius: 12px; }
+
+        /* Configuración */
+        .config-panel {
+            background: #f3f4f6;
+            padding: 15px;
+            border-radius: 20px;
+            margin-bottom: 15px;
+        }
+
+        .config-row {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 10px;
+            align-items: center;
+        }
+
+        .config-row:last-child { margin-bottom: 0; }
+
+        .config-label {
+            font-size: 0.85rem;
+            font-weight: bold;
+            color: #555;
+            flex-shrink: 0;
+        }
+
+        .mode-btn {
+            background: #e5e7eb;
+            color: #374151;
+            padding: 8px 14px;
+            font-size: 0.8rem;
+            min-height: auto;
+            border-radius: 20px;
+        }
+
+        .mode-btn.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        /* Stats */
+        .stats {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+
+        .stat {
+            flex: 1;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 10px;
+            border-radius: 15px;
+            text-align: center;
+        }
+
+        .stat .label { font-size: 0.7rem; opacity: 0.9; }
+        .stat .value { font-size: 1.3rem; font-weight: bold; }
+
+        /* Imagen + Puntos */
+        .image-wrapper {
+            position: relative;
+            display: inline-block;
+            width: 100%;
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: inset 0 0 0 2px #e5e7eb;
+            margin-bottom: 15px;
+        }
+
+        .image-wrapper img {
+            display: block;
+            width: 100%;
+            height: auto;
+        }
+
+        .point {
+            position: absolute;
+            transform: translate(-50%, -50%);
+            z-index: 10;
+        }
+
+        .point-dot {
+            width: 22px;
+            height: 22px;
+            background: #667eea;
+            border: 3px solid white;
+            border-radius: 50%;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 0.7rem;
+            font-weight: bold;
+            transition: all 0.2s;
+        }
+
+        .point-dot:hover { transform: scale(1.15); }
+
+        .point.correct .point-dot { background: #10b981; }
+        .point.incorrect .point-dot { background: #ef4444; animation: shake 0.4s; }
+        .point.active .point-dot { background: #f59e0b; transform: scale(1.2); }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        .point-label {
+            position: absolute;
+            background: white;
+            padding: 4px 10px;
+            border-radius: 15px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            white-space: nowrap;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+            pointer-events: none;
+        }
+
+        /* Chips de palabras */
+        .words-pool {
+            background: #f9fafb;
+            border-radius: 20px;
+            padding: 15px;
+            margin-bottom: 15px;
+            min-height: 80px;
+        }
+
+        .words-pool-title {
+            font-size: 0.8rem;
+            font-weight: bold;
+            color: #555;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .chips-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .chip {
+            background: white;
+            border: 2px solid #667eea;
+            color: #333;
+            padding: 8px 14px;
+            border-radius: 25px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+            user-select: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .chip:hover:not(.used) {
+            background: #667eea;
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .chip.used {
+            opacity: 0.3;
+            pointer-events: none;
+            text-decoration: line-through;
+        }
+
+        .chip.selected {
+            background: #f59e0b;
+            border-color: #d97706;
+            color: white;
+            transform: scale(1.05);
+        }
+
+        /* Instrucciones */
+        .instruction {
+            background: #dbeafe;
+            color: #1e40af;
+            padding: 12px;
+            border-radius: 15px;
+            text-align: center;
+            font-size: 0.85rem;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        /* Status */
+        .status-msg {
+            background: #f3f4f6;
+            padding: 12px;
+            border-radius: 15px;
+            text-align: center;
+            font-size: 0.9rem;
+            color: #555;
+            margin-bottom: 15px;
+        }
+
+        .status-msg.success {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            font-weight: bold;
+            animation: pulse 1s infinite;
+        }
+
+        .status-msg.error { background: #fee2e2; color: #991b1b; font-weight: bold; }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.01); }
+            100% { transform: scale(1); }
+        }
+
+        /* Botón de acción */
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .action-buttons button { flex: 1; min-width: 130px; }
+
+        /* Back button */
+        .back-btn {
+            background: #e5e7eb;
+            color: #374151;
+            padding: 8px 16px;
+            font-size: 0.85rem;
+            min-height: 40px;
+            margin-bottom: 15px;
+        }
+
+        /* Victory */
+        .victory {
+            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+            color: #78350f;
+            padding: 20px;
+            border-radius: 20px;
+            text-align: center;
+            display: none;
+            margin-top: 15px;
+        }
+
+        .victory.show { display: block; animation: victory-in 0.6s; }
+
+        @keyframes victory-in {
+            0% { transform: scale(0.8); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .victory h2 { font-size: 1.6rem; margin-bottom: 8px; }
+
+        @media (max-width: 500px) {
+            h1 { font-size: 1.4rem; }
+            .point-dot { width: 18px; height: 18px; }
+            .point-label { font-size: 0.65rem; padding: 3px 7px; }
+            .chip { font-size: 0.75rem; padding: 6px 10px; }
+        }
+
+        @supports (padding: max(0px)) {
+            body {
+                padding-left: max(15px, env(safe-area-inset-left));
+                padding-right: max(15px, env(safe-area-inset-right));
+                padding-bottom: max(15px, env(safe-area-inset-bottom));
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="card">
+        <button class="back-btn" onclick="window.location.href='../'">← Zurück / Volver</button>
+
+        <h1>🦴 Das Skelett</h1>
+        <div class="subtitle">Beschrifte die Knochen / Etiqueta los huesos</div>
+
+        <!-- Configuración -->
+        <div class="config-panel">
+            <div class="config-row">
+                <span class="config-label">🎯 Modo:</span>
+                <button class="mode-btn active" data-mode="drag">🖱️ Chips (toca para asignar)</button>
+                <button class="mode-btn" data-mode="write">✏️ Escribir</button>
+            </div>
+        </div>
+
+        <!-- Stats -->
+        <div class="stats">
+            <div class="stat">
+                <div class="label">✅ Correctas</div>
+                <div class="value" id="correctCount">0</div>
+            </div>
+            <div class="stat">
+                <div class="label">❌ Errores</div>
+                <div class="value" id="incorrectCount">0</div>
+            </div>
+            <div class="stat">
+                <div class="label">📝 Restantes</div>
+                <div class="value" id="remainingCount">0</div>
+            </div>
+        </div>
+
+        <div class="instruction" id="instruction">
+            Toca un punto <strong>azul</strong> en el esqueleto, luego toca la palabra correcta.
+        </div>
+
+        <!-- Imagen con puntos -->
+        <div class="image-wrapper" id="imageWrapper">
+            <img id="skeletonImage" src="skelett.png" alt="Esqueleto humano">
+            <!-- Los puntos se generan dinámicamente -->
+        </div>
+
+        <!-- Pool de palabras -->
+        <div class="words-pool" id="wordsPool" style="display:none;">
+            <div class="words-pool-title">📚 Palabras disponibles</div>
+            <div class="chips-container" id="chipsContainer"></div>
+        </div>
+
+        <!-- Modo escribir -->
+        <div class="words-pool" id="writePanel" style="display:none;">
+            <div class="words-pool-title">✏️ Escribe la palabra alemana</div>
+            <div style="display:flex; gap:10px;">
+                <input type="text" id="writeInput" placeholder="Palabra..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" style="flex:1; padding:14px; border:2px solid #667eea; border-radius:50px; font-size:1rem; text-align:center; font-weight:bold;">
+                <button class="btn-success" id="submitWrite">✅</button>
+            </div>
+            <div id="writeHint" style="margin-top:8px; font-size:0.8rem; color:#666; text-align:center;"></div>
+        </div>
+
+        <!-- Estado -->
+        <div class="status-msg" id="statusMsg">Toca un punto para empezar</div>
+
+        <!-- Acciones -->
+        <div class="action-buttons">
+            <button class="btn-primary" id="speakAllBtn">🔊 Escuchar todas</button>
+            <button class="btn-warning" id="resetBtn">🔄 Reiniciar</button>
+            <button class="btn-info" id="hintBtn">💡 Pista</button>
+        </div>
+
+        <!-- Victoria -->
+        <div class="victory" id="victory">
+            <h2>🎉 ¡Completado!</h2>
+            <div id="victoryText"></div>
+            <button class="btn-success" id="playAgainBtn" style="margin-top:12px;">🔁 Jugar otra vez</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // ============================================
+    // DATOS: HUESOS DEL ESQUELETO
+    // Coordenadas en % (x = izquierda, y = arriba)
+    // Basadas en la imagen de la página 18 del PDF
+    // ============================================
+    const SKELETON_DATA = [
+        { id: 'schaedel', de: 'Schädel', es: 'cráneo', x: 50, y: 5, plural: 'Schädel' },
+        { id: 'schluesselbein', de: 'Schlüsselbein', es: 'clavícula', x: 40, y: 15, plural: 'Schlüsselbeine' },
+        { id: 'oberarmknochen', de: 'Oberarmknochen', es: 'húmero', x: 20, y: 22, plural: 'Oberarmknochen' },
+        { id: 'elle', de: 'Elle', es: 'cúbito', x: 18, y: 32, plural: 'Ellen' },
+        { id: 'speiche', de: 'Speiche', es: 'radio', x: 22, y: 38, plural: 'Speichen' },
+        { id: 'hand', de: 'Hand', es: 'mano', x: 8, y: 50, plural: 'Hände' },
+        { id: 'schulterblatt', de: 'Schulterblatt', es: 'omóplato', x: 70, y: 15, plural: 'Schulterblätter' },
+        { id: 'brustbein', de: 'Brustbein', es: 'esternón', x: 60, y: 20, plural: 'Brustbeine' },
+        { id: 'rippen', de: 'Rippen', es: 'costillas', x: 65, y: 25, plural: 'Rippen' },
+        { id: 'wirbelsaeule', de: 'Wirbelsäule', es: 'columna vertebral', x: 55, y: 30, plural: 'Wirbelsäulen' },
+        { id: 'beckenknochen', de: 'Beckenknochen', es: 'hueso pélvico', x: 55, y: 45, plural: 'Beckenknochen' },
+        { id: 'oberschenkelknochen', de: 'Oberschenkelknochen', es: 'fémur', x: 70, y: 60, plural: 'Oberschenkelknochen' },
+        { id: 'schienbein', de: 'Schienbein', es: 'tibia', x: 68, y: 75, plural: 'Schienbeine' },
+        { id: 'wadenbein', de: 'Wadenbein', es: 'peroné', x: 78, y: 80, plural: 'Wadenbeine' },
+        { id: 'fuss', de: 'Fuß', es: 'pie', x: 75, y: 95, plural: 'Füße' }
+    ];
+
+    // ============================================
+    // ESTADO
+    // ============================================
+    let currentMode = 'drag';       // 'drag' o 'write'
+    let activePointId = null;       // punto actualmente seleccionado
+    let assignments = {};           // { pointId: wordDe }
+    let correctWords = [];
+    let incorrectWords = [];
+    let solved = {};                // { pointId: true/false }
+
+    // DOM
+    const imageWrapper = document.getElementById('imageWrapper');
+    const skeletonImage = document.getElementById('skeletonImage');
+    const chipsContainer = document.getElementById('chipsContainer');
+    const wordsPool = document.getElementById('wordsPool');
+    const writePanel = document.getElementById('writePanel');
+    const writeInput = document.getElementById('writeInput');
+    const writeHint = document.getElementById('writeHint');
+    const statusMsg = document.getElementById('statusMsg');
+    const instruction = document.getElementById('instruction');
+    const victory = document.getElementById('victory');
+
+    // ============================================
+    // UTILIDADES
+    // ============================================
+    function shuffle(arr) {
+        const a = [...arr];
+        for (let i = a.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [a[i], a[j]] = [a[j], a[i]];
+        }
+        return a;
+    }
+
+    function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+
+    // ============================================
+    // RENDERIZAR PUNTOS
+    // ============================================
+    function renderPoints() {
+        // Eliminar puntos previos
+        imageWrapper.querySelectorAll('.point').forEach(p => p.remove());
+
+        SKELETON_DATA.forEach(item => {
+            const point = document.createElement('div');
+            point.className = 'point';
+            point.id = 'point-' + item.id;
+            point.style.left = item.x + '%';
+            point.style.top = item.y + '%';
+            point.dataset.pointId = item.id;
+
+            point.innerHTML = `
+                <div class="point-dot" data-point-id="${item.id}">${item.id.substring(0, 1).toUpperCase()}</div>
+            `;
+
+            point.querySelector('.point-dot').addEventListener('click', (e) => {
+                e.stopPropagation();
+                selectPoint(item.id);
+            });
+
+            imageWrapper.appendChild(point);
+        });
+    }
+
+    // ============================================
+    // SELECCIONAR PUNTO
+    // ============================================
+    function selectPoint(pointId) {
+        if (solved[pointId]) return; // ya resuelto
+
+        activePointId = pointId;
+        const point = document.getElementById('point-' + pointId);
+        const word = SKELETON_DATA.find(s => s.id === pointId);
+
+        // Resaltar punto activo
+        imageWrapper.querySelectorAll('.point').forEach(p => p.classList.remove('active'));
+        point.classList.add('active');
+
+        const modeText = currentMode === 'drag' ? 'toca la palabra correcta' : 'escribe la palabra alemana';
+        instruction.innerHTML = `📍 <strong>${word.x}%, ${word.y}%</strong> — Punto seleccionado. Ahora ${modeText}.`;
+        statusMsg.textContent = `Punto activo: selecciona "${pointId}"`;
+        statusMsg.className = 'status-msg';
+
+        if (currentMode === 'write') {
+            writeInput.value = '';
+            writeInput.focus();
+            writeHint.innerHTML = `💡 Pista: empieza con "<strong>${word.de.charAt(0)}</strong>" y tiene <strong>${word.de.length}</strong> letras`;
+        }
+    }
+
+    // ============================================
+    // RENDERIZAR CHIPS
+    // ============================================
+    function renderChips() {
+        const shuffled = shuffle(SKELETON_DATA);
+        chipsContainer.innerHTML = shuffled.map(item => `
+            <div class="chip" data-word="${escapeHtml(item.de)}">
+                ${escapeHtml(item.de)}
+            </div>
+        `).join('');
+
+        chipsContainer.querySelectorAll('.chip').forEach(chip => {
+            chip.addEventListener('click', () => {
+                if (!activePointId) {
+                    statusMsg.textContent = '⚠️ Primero toca un punto en el esqueleto';
+                    statusMsg.className = 'status-msg error';
+                    return;
+                }
+                if (chip.classList.contains('used')) return;
+
+                const word = chip.dataset.word;
+                assignWord(word);
+            });
+        });
+    }
+
+    // ============================================
+    // ASIGNAR PALABRA A PUNTO
+    // ============================================
+    function assignWord(word) {
+        const pointData = SKELETON_DATA.find(s => s.id === activePointId);
+        if (!pointData) return;
+
+        const isCorrect = word.toLowerCase() === pointData.de.toLowerCase();
+
+        if (isCorrect) {
+            solved[activePointId] = true;
+            correctWords.push(pointData.de);
+
+            const point = document.getElementById('point-' + activePointId);
+            point.classList.add('correct');
+            point.classList.remove('active');
+
+            // Añadir etiqueta
+            const label = document.createElement('div');
+            label.className = 'point-label';
+            label.textContent = word;
+            label.style.cssText = `
+                left: ${pointData.x}%;
+                top: ${pointData.y + 5}%;
+                background: #10b981;
+                color: white;
+            `;
+            imageWrapper.appendChild(label);
+
+            // Marcar chip como usado
+            chipsContainer.querySelectorAll('.chip').forEach(c => {
+                if (c.dataset.word.toLowerCase() === word.toLowerCase()) {
+                    c.classList.add('used');
+                }
+            });
+
+            statusMsg.textContent = `✅ ¡Correcto! ${pointData.de} = ${pointData.es}`;
+            statusMsg.className = 'status-msg success';
+            playSound('success');
+
+            activePointId = null;
+            checkVictory();
+        } else {
+            incorrectWords.push(pointData.de);
+            const point = document.getElementById('point-' + activePointId);
+            point.classList.add('incorrect');
+            setTimeout(() => point.classList.remove('incorrect'), 500);
+
+            statusMsg.textContent = `❌ Incorrecto. Esa no es la palabra del punto seleccionado.`;
+            statusMsg.className = 'status-msg error';
+            playSound('error');
+        }
+
+        updateStats();
+    }
+
+    // ============================================
+    // MODO ESCRIBIR
+    // ============================================
+    function submitWrite() {
+        if (!activePointId) {
+            statusMsg.textContent = '⚠️ Primero toca un punto en el esqueleto';
+            statusMsg.className = 'status-msg error';
+            return;
+        }
+        const val = writeInput.value.trim();
+        if (!val) return;
+        assignWord(val);
+        writeInput.value = '';
+    }
+
+    document.getElementById('submitWrite').addEventListener('click', submitWrite);
+    writeInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') { e.preventDefault(); submitWrite(); }
+    });
+
+    // ============================================
+    // CAMBIO DE MODO
+    // ============================================
+    document.querySelectorAll('.mode-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            currentMode = btn.dataset.mode;
+
+            if (currentMode === 'drag') {
+                wordsPool.style.display = 'block';
+                writePanel.style.display = 'none';
+                instruction.innerHTML = 'Toca un punto <strong>azul</strong> en el esqueleto, luego toca la palabra correcta.';
+            } else {
+                wordsPool.style.display = 'none';
+                writePanel.style.display = 'block';
+                instruction.innerHTML = 'Toca un punto <strong>azul</strong> en el esqueleto, luego escribe la palabra alemana.';
+            }
+            resetGame();
+        });
+    });
+
+    // ============================================
+    // ESTADÍSTICAS
+    // ============================================
+    function updateStats() {
+        const solvedCount = Object.keys(solved).length;
+        document.getElementById('correctCount').textContent = solvedCount;
+        document.getElementById('incorrectCount').textContent = incorrectWords.length;
+        document.getElementById('remainingCount').textContent = SKELETON_DATA.length - solvedCount;
+    }
+
+    // ============================================
+    // VICTORIA
+    // ============================================
+    function checkVictory() {
+        const solvedCount = Object.keys(solved).length;
+        if (solvedCount === SKELETON_DATA.length) {
+            victory.classList.add('show');
+            document.getElementById('victoryText').innerHTML = `
+                🎉 ¡Felicidades!<br>
+                ✅ Aciertos: <strong>${solvedCount}</strong><br>
+                ❌ Errores: <strong>${incorrectWords.length}</strong>
+            `;
+            statusMsg.textContent = '🏆 ¡Completaste el esqueleto!';
+            statusMsg.className = 'status-msg success';
+            playSound('victory');
+        }
+    }
+
+    // ============================================
+    // PRONUNCIACIÓN
+    // ============================================
+    function speak(text) {
+        if (!('speechSynthesis' in window)) return;
+        window.speechSynthesis.cancel();
+        const utt = new SpeechSynthesisUtterance(text);
+        utt.lang = 'de-DE';
+        utt.rate = 0.85;
+        const voices = window.speechSynthesis.getVoices();
+        const german = voices.find(v => v.lang === 'de-DE' || v.lang.startsWith('de'));
+        if (german) utt.voice = german;
+        window.speechSynthesis.speak(utt);
+    }
+
+    document.getElementById('speakAllBtn').addEventListener('click', () => {
+        const words = SKELETON_DATA.map(s => s.de);
+        let i = 0;
+        const speakNext = () => {
+            if (i >= words.length) return;
+            speak(words[i]);
+            i++;
+            setTimeout(speakNext, 1500);
+        };
+        speakNext();
+        statusMsg.textContent = '🔊 Pronunciando todas las palabras...';
+    });
+
+    if ('speechSynthesis' in window) {
+        window.speechSynthesis.onvoiceschanged = () => window.speechSynthesis.getVoices();
+        window.speechSynthesis.getVoices();
+    }
+
+    // ============================================
+    // PISTA
+    // ============================================
+    document.getElementById('hintBtn').addEventListener('click', () => {
+        if (!activePointId) {
+            statusMsg.textContent = '⚠️ Primero toca un punto en el esqueleto';
+            statusMsg.className = 'status-msg error';
+            return;
+        }
+        const word = SKELETON_DATA.find(s => s.id === activePointId);
+        statusMsg.innerHTML = `💡 Pista: <strong>${word.de.charAt(0)}</strong>... (${word.de.length} letras). Significado: <strong>${word.es}</strong>`;
+        statusMsg.className = 'status-msg';
+    });
+
+    // ============================================
+    // SONIDOS
+    // ============================================
+    let audioCtx = null;
+    function getAudioCtx() {
+        if (!audioCtx) {
+            try { audioCtx = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) {}
+        }
+        return audioCtx;
+    }
+
+    function playSound(type) {
+        const ctx = getAudioCtx();
+        if (!ctx) return;
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.connect(gain); gain.connect(ctx.destination);
+        osc.type = 'sine';
+        if (type === 'success') {
+            osc.frequency.value = 880;
+            gain.gain.setValueAtTime(0.15, ctx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.2);
+            osc.start(); osc.stop(ctx.currentTime + 0.2);
+        } else if (type === 'error') {
+            osc.frequency.value = 220;
+            osc.type = 'sawtooth';
+            gain.gain.setValueAtTime(0.1, ctx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.25);
+            osc.start(); osc.stop(ctx.currentTime + 0.25);
+        } else if (type === 'victory') {
+            [523, 659, 784, 1047].forEach((freq, i) => {
+                setTimeout(() => {
+                    const o = ctx.createOscillator();
+                    const g = ctx.createGain();
+                    o.connect(g); g.connect(ctx.destination);
+                    o.frequency.value = freq;
+                    g.gain.setValueAtTime(0.15, ctx.currentTime);
+                    g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.3);
+                    o.start(); o.stop(ctx.currentTime + 0.3);
+                }, i * 150);
+            });
+        }
+    }
+
+    // ============================================
+    // RESET
+    // ============================================
+    function resetGame() {
+        assignments = {};
+        correctWords = [];
+        incorrectWords = [];
+        solved = {};
+        activePointId = null;
+        victory.classList.remove('show');
+
+        imageWrapper.querySelectorAll('.point').forEach(p => {
+            p.classList.remove('correct', 'incorrect', 'active');
+        });
+        imageWrapper.querySelectorAll('.point-label').forEach(l => l.remove());
+
+        if (currentMode === 'drag') renderChips();
+        updateStats();
+        statusMsg.textContent = 'Toca un punto en el esqueleto para empezar';
+        statusMsg.className = 'status-msg';
+        instruction.innerHTML = 'Toca un punto <strong>azul</strong> en el esqueleto, luego toca la palabra correcta.';
+    }
+
+    document.getElementById('resetBtn').addEventListener('click', resetGame);
+    document.getElementById('playAgainBtn').addEventListener('click', resetGame);
+
+    // ============================================
+    // INICIALIZAR
+    // ============================================
+    renderPoints();
+    renderChips();
+    updateStats();
+    statusMsg.textContent = 'Toca un punto para empezar';
+</script>
+</body>
+</html>
