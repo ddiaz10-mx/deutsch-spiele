@@ -43,6 +43,18 @@
             margin-bottom: 10px;
         }
 
+        .section-title {
+            color: rgba(255,255,255,0.9);
+            font-size: 1.1rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 15px;
+            margin-top: 10px;
+            padding-left: 5px;
+            opacity: 0.8;
+        }
+
         .games-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
@@ -87,6 +99,7 @@
         .game-card.game-1 { --accent: linear-gradient(90deg, #667eea, #764ba2); }
         .game-card.game-2 { --accent: linear-gradient(90deg, #059669, #065f46); }
         .game-card.game-3 { --accent: linear-gradient(90deg, #f59e0b, #d97706); }
+        .game-card.game-4 { --accent: linear-gradient(90deg, #10b981, #047857); }
 
         .game-icon {
             font-size: 3.5rem;
@@ -173,6 +186,8 @@
             <div class="subtitle">Wähle ein Spiel zum Üben</div>
         </header>
 
+        <div class="section-title">📚 Vokabeln / Vocabulario</div>
+
         <div class="games-grid">
 
             <a href="wort-erraten/" class="game-card game-1">
@@ -197,6 +212,20 @@
                 <div class="game-title">Match de palabras</div>
                 <div class="game-desc">Relaciona cada palabra en alemán con su significado en español</div>
                 <span class="game-tag">Zuordnen</span>
+            </a>
+
+        </div>
+
+        <div class="section-title">🔬 Schulfächer / Materias</div>
+
+        <div class="games-grid">
+
+            <a href="biologie/" class="game-card game-4">
+                <div class="game-icon">🧬</div>
+                <div class="game-title-de">Biologie</div>
+                <div class="game-title">Biología</div>
+                <div class="game-desc">Aprende vocabulario con imágenes, audio y diagramas</div>
+                <span class="game-tag">Bilder</span>
             </a>
 
         </div>
