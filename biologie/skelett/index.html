@@ -66,9 +66,7 @@
         .btn-primary { background: #667eea; color: white; }
         .btn-success { background: #10b981; color: white; }
         .btn-warning { background: #f59e0b; color: white; }
-        .btn-danger { background: #dc2626; color: white; }
         .btn-info { background: #3b82f6; color: white; }
-        .btn-small-speak { background: #059669; color: white; padding: 6px 10px; font-size: 0.8rem; min-height: auto; border-radius: 12px; }
 
         /* Configuración */
         .config-panel {
@@ -107,6 +105,27 @@
         .mode-btn.active {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
+        }
+
+        .toggle-btn {
+            background: #e5e7eb;
+            color: #374151;
+            padding: 8px 14px;
+            font-size: 0.8rem;
+            min-height: auto;
+            border-radius: 20px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .toggle-btn.active {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+        }
+
+        .toggle-btn .toggle-icon {
+            font-size: 0.9rem;
         }
 
         /* Stats */
@@ -191,6 +210,8 @@
             white-space: nowrap;
             box-shadow: 0 2px 8px rgba(0,0,0,0.15);
             pointer-events: none;
+            color: white;
+            background: #10b981;
         }
 
         /* Chips de palabras */
@@ -243,13 +264,6 @@
             opacity: 0.3;
             pointer-events: none;
             text-decoration: line-through;
-        }
-
-        .chip.selected {
-            background: #f59e0b;
-            border-color: #d97706;
-            color: white;
-            transform: scale(1.05);
         }
 
         /* Instrucciones */
@@ -358,8 +372,15 @@
         <div class="config-panel">
             <div class="config-row">
                 <span class="config-label">🎯 Modo:</span>
-                <button class="mode-btn active" data-mode="drag">🖱️ Chips (toca para asignar)</button>
+                <button class="mode-btn active" data-mode="drag">🖱️ Chips</button>
                 <button class="mode-btn" data-mode="write">✏️ Escribir</button>
+            </div>
+            <div class="config-row">
+                <span class="config-label">🔊 Audio:</span>
+                <button class="toggle-btn active" id="autoSpeakToggle">
+                    <span class="toggle-icon">🔊</span>
+                    <span id="autoSpeakLabel">Pronunciar al acertar</span>
+                </button>
             </div>
         </div>
 
@@ -390,7 +411,7 @@
         </div>
 
         <!-- Pool de palabras -->
-        <div class="words-pool" id="wordsPool" style="display:none;">
+        <div class="words-pool" id="wordsPool">
             <div class="words-pool-title">📚 Palabras disponibles</div>
             <div class="chips-container" id="chipsContainer"></div>
         </div>
@@ -427,36 +448,41 @@
 <script>
     // ============================================
     // DATOS: HUESOS DEL ESQUELETO
-    // Coordenadas en % (x = izquierda, y = arriba)
-    // Basadas en la imagen de la página 18 del PDF
+    // Coordenadas ajustadas para la imagen de tu repo
     // ============================================
     const SKELETON_DATA = [
-    { id: 'schaedel', de: 'Schädel', es: 'cráneo', x: 50, y: 6, plural: 'Schädel' },
-    { id: 'schluesselbein', de: 'Schlüsselbein', es: 'clavícula', x: 43, y: 19, plural: 'Schlüsselbeine' },
-    { id: 'oberarmknochen', de: 'Oberarmknochen', es: 'húmero', x: 35, y: 24, plural: 'Oberarmknochen' },
-    { id: 'elle', de: 'Elle', es: 'cúbito', x: 33, y: 36, plural: 'Ellen' },
-    { id: 'speiche', de: 'Speiche', es: 'radio', x: 37, y: 42, plural: 'Speichen' },
-    { id: 'hand', de: 'Hand', es: 'mano', x: 33, y: 52, plural: 'Hände' },
-    { id: 'schulterblatt', de: 'Schulterblatt', es: 'omóplato', x: 57, y: 22, plural: 'Schulterblätter' },
-    { id: 'brustbein', de: 'Brustbein', es: 'esternón', x: 50, y: 25, plural: 'Brustbeine' },
-    { id: 'rippen', de: 'Rippen', es: 'costillas', x: 55, y: 28, plural: 'Rippen' },
-    { id: 'wirbelsaeule', de: 'Wirbelsäule', es: 'columna vertebral', x: 50, y: 35, plural: 'Wirbelsäulen' },
-    { id: 'beckenknochen', de: 'Beckenknochen', es: 'hueso pélvico', x: 50, y: 44, plural: 'Beckenknochen' },
-    { id: 'oberschenkelknochen', de: 'Oberschenkelknochen', es: 'fémur', x: 42, y: 58, plural: 'Oberschenkelknochen' },
-    { id: 'schienbein', de: 'Schienbein', es: 'tibia', x: 42, y: 75, plural: 'Schienbeine' },
-    { id: 'wadenbein', de: 'Wadenbein', es: 'peroné', x: 45, y: 82, plural: 'Wadenbeine' },
-    { id: 'fuss', de: 'Fuß', es: 'pie', x: 45, y: 95, plural: 'Füße' }
-];
+        { id: 'schaedel', de: 'Schädel', es: 'cráneo', x: 50, y: 6, plural: 'Schädel' },
+        { id: 'schluesselbein', de: 'Schlüsselbein', es: 'clavícula', x: 42, y: 18, plural: 'Schlüsselbeine' },
+        { id: 'oberarmknochen', de: 'Oberarmknochen', es: 'húmero', x: 38, y: 25, plural: 'Oberarmknochen' },
+        { id: 'elle', de: 'Elle', es: 'cúbito', x: 34, y: 38, plural: 'Ellen' },
+        { id: 'speiche', de: 'Speiche', es: 'radio', x: 36, y: 42, plural: 'Speichen' },
+        { id: 'hand', de: 'Hand', es: 'mano', x: 32, y: 52, plural: 'Hände' },
+        { id: 'schulterblatt', de: 'Schulterblatt', es: 'omóplato', x: 60, y: 20, plural: 'Schulterblätter' },
+        { id: 'brustbein', de: 'Brustbein', es: 'esternón', x: 50, y: 25, plural: 'Brustbeine' },
+        { id: 'rippen', de: 'Rippen', es: 'costillas', x: 56, y: 28, plural: 'Rippen' },
+        { id: 'wirbelsaeule', de: 'Wirbelsäule', es: 'columna vertebral', x: 50, y: 36, plural: 'Wirbelsäulen' },
+        { id: 'beckenknochen', de: 'Beckenknochen', es: 'hueso pélvico', x: 42, y: 46, plural: 'Beckenknochen' },
+        { id: 'oberschenkelknochen', de: 'Oberschenkelknochen', es: 'fémur', x: 42, y: 60, plural: 'Oberschenkelknochen' },
+        { id: 'schienbein', de: 'Schienbein', es: 'tibia', x: 42, y: 78, plural: 'Schienbeine' },
+        { id: 'wadenbein', de: 'Wadenbein', es: 'peroné', x: 46, y: 82, plural: 'Wadenbeine' },
+        { id: 'fuss', de: 'Fuß', es: 'pie', x: 45, y: 95, plural: 'Füße' }
+    ];
 
     // ============================================
     // ESTADO
     // ============================================
-    let currentMode = 'drag';       // 'drag' o 'write'
-    let activePointId = null;       // punto actualmente seleccionado
-    let assignments = {};           // { pointId: wordDe }
+    let currentMode = 'drag';
+    let activePointId = null;
+    let solved = {};
     let correctWords = [];
     let incorrectWords = [];
-    let solved = {};                // { pointId: true/false }
+    let autoSpeakEnabled = true;
+
+    // Cargar preferencia guardada
+    try {
+        const saved = localStorage.getItem('skelett_autoSpeak');
+        if (saved !== null) autoSpeakEnabled = saved === 'true';
+    } catch(e) {}
 
     // DOM
     const imageWrapper = document.getElementById('imageWrapper');
@@ -469,6 +495,8 @@
     const statusMsg = document.getElementById('statusMsg');
     const instruction = document.getElementById('instruction');
     const victory = document.getElementById('victory');
+    const autoSpeakToggle = document.getElementById('autoSpeakToggle');
+    const autoSpeakLabel = document.getElementById('autoSpeakLabel');
 
     // ============================================
     // UTILIDADES
@@ -492,7 +520,6 @@
     // RENDERIZAR PUNTOS
     // ============================================
     function renderPoints() {
-        // Eliminar puntos previos
         imageWrapper.querySelectorAll('.point').forEach(p => p.remove());
 
         SKELETON_DATA.forEach(item => {
@@ -520,19 +547,18 @@
     // SELECCIONAR PUNTO
     // ============================================
     function selectPoint(pointId) {
-        if (solved[pointId]) return; // ya resuelto
+        if (solved[pointId]) return;
 
         activePointId = pointId;
         const point = document.getElementById('point-' + pointId);
         const word = SKELETON_DATA.find(s => s.id === pointId);
 
-        // Resaltar punto activo
         imageWrapper.querySelectorAll('.point').forEach(p => p.classList.remove('active'));
         point.classList.add('active');
 
         const modeText = currentMode === 'drag' ? 'toca la palabra correcta' : 'escribe la palabra alemana';
-        instruction.innerHTML = `📍 <strong>${word.x}%, ${word.y}%</strong> — Punto seleccionado. Ahora ${modeText}.`;
-        statusMsg.textContent = `Punto activo: selecciona "${pointId}"`;
+        instruction.innerHTML = `📍 Punto seleccionado. Ahora ${modeText}.`;
+        statusMsg.textContent = `Punto activo: selecciona "${word.de}"`;
         statusMsg.className = 'status-msg';
 
         if (currentMode === 'write') {
@@ -561,15 +587,13 @@
                     return;
                 }
                 if (chip.classList.contains('used')) return;
-
-                const word = chip.dataset.word;
-                assignWord(word);
+                assignWord(chip.dataset.word);
             });
         });
     }
 
     // ============================================
-    // ASIGNAR PALABRA A PUNTO
+    // ASIGNAR PALABRA
     // ============================================
     function assignWord(word) {
         const pointData = SKELETON_DATA.find(s => s.id === activePointId);
@@ -585,28 +609,30 @@
             point.classList.add('correct');
             point.classList.remove('active');
 
-            // Añadir etiqueta
             const label = document.createElement('div');
             label.className = 'point-label';
             label.textContent = word;
             label.style.cssText = `
                 left: ${pointData.x}%;
                 top: ${pointData.y + 5}%;
-                background: #10b981;
-                color: white;
             `;
             imageWrapper.appendChild(label);
 
-            // Marcar chip como usado
             chipsContainer.querySelectorAll('.chip').forEach(c => {
                 if (c.dataset.word.toLowerCase() === word.toLowerCase()) {
                     c.classList.add('used');
                 }
             });
 
-            statusMsg.textContent = `✅ ¡Correcto! ${pointData.de} = ${pointData.es}`;
+            // Mensaje con palabra mencionada
+            statusMsg.textContent = `✅ ¡Correcto! "${pointData.de}" = ${pointData.es}`;
             statusMsg.className = 'status-msg success';
             playSound('success');
+
+            // 🔊 Pronunciar la palabra si el toggle está activo
+            if (autoSpeakEnabled) {
+                setTimeout(() => speak(pointData.de), 300);
+            }
 
             activePointId = null;
             checkVictory();
@@ -664,6 +690,31 @@
             }
             resetGame();
         });
+    });
+
+    // ============================================
+    // TOGGLE PRONUNCIACIÓN
+    // ============================================
+    function updateAutoSpeakUI() {
+        if (autoSpeakEnabled) {
+            autoSpeakToggle.classList.add('active');
+            autoSpeakToggle.querySelector('.toggle-icon').textContent = '🔊';
+            autoSpeakLabel.textContent = 'Pronunciar al acertar';
+        } else {
+            autoSpeakToggle.classList.remove('active');
+            autoSpeakToggle.querySelector('.toggle-icon').textContent = '🔇';
+            autoSpeakLabel.textContent = 'Silenciado';
+        }
+    }
+
+    autoSpeakToggle.addEventListener('click', () => {
+        autoSpeakEnabled = !autoSpeakEnabled;
+        try {
+            localStorage.setItem('skelett_autoSpeak', autoSpeakEnabled.toString());
+        } catch(e) {}
+        updateAutoSpeakUI();
+        statusMsg.textContent = autoSpeakEnabled ? '🔊 Pronunciación activada' : '🔇 Pronunciación desactivada';
+        statusMsg.className = 'status-msg';
     });
 
     // ============================================
@@ -789,7 +840,6 @@
     // RESET
     // ============================================
     function resetGame() {
-        assignments = {};
         correctWords = [];
         incorrectWords = [];
         solved = {};
@@ -817,6 +867,7 @@
     renderPoints();
     renderChips();
     updateStats();
+    updateAutoSpeakUI();
     statusMsg.textContent = 'Toca un punto para empezar';
 </script>
 </body>
