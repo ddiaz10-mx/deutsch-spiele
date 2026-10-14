@@ -235,5 +235,19 @@
             <div class="footer-hint">📱 Añade esta página a tu pantalla de inicio</div>
         </footer>
     </div>
+    <script>
+        // Monitoreo de uso
+        (function() {
+            fetch('https://script.google.com/macros/s/AKfycbysVdG5UKMZmMJe7RdL3cEA6nt-V5xs03T4uwnoaeHYKFt_8Bo2AvclGWuxUM-Wd1Md/exec', {
+               method: 'POST',
+               mode: 'no-cors',
+               headers: { 'Content-Type': 'application/json' },
+               body: JSON.stringify({
+                   pagina: window.location.pathname || '/',
+                   dispositivo: /iPhone|iPad|Android/i.test(navigator.userAgent) ? 'Móvil' : 'Escritorio'
+               })
+            }).catch(function() { /* silencioso si falla */ });
+         })();
+     </script>
 </body>
 </html>
